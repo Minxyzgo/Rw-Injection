@@ -46,7 +46,7 @@ object Builder {
         }
     }
 
-    fun buildNewClassTree(): Pair<ClassPool, NodeTree> {
+    fun buildNewClassTree(resource: String = "game-lib.jar"): Pair<ClassPool, NodeTree> {
         val packageList: List<String>
         val cp = ClassPool.getDefault()
         //用于解析内部类
@@ -56,8 +56,8 @@ object Builder {
         class name - class data
          */
         val cl = javaClass.classLoader
-        cl.getResourceAsStream("game-lib.jar")!!.use { lib ->
-            val tempFile = File.createTempFile("game-lib-temp", ".jar")
+        cl.getResourceAsStream(resource)!!.use { lib ->
+            val tempFile = File.createTempFile("$resource-temp", ".jar")
             tempFile.deleteOnExit()
             tempFile.writeBytes(lib.readBytes())
             packageList = buildList {
@@ -67,7 +67,7 @@ object Builder {
                         return@mapNotNull null
                     }
 
-                    if (it.name.endsWith(".class")) it.name.removeSuffix(".class").replace("/", ".") else null
+                    if(it.name.endsWith(".class")) it.name.removeSuffix(".class").replace("/", ".") else null
                 }.forEach(classTree::addChild)
             }
 
@@ -196,7 +196,8 @@ object Builder {
                 val returnClazz = behavior.returnType
                 val types = ignoreMethodTypes(ctClass)
                 if(types.keys.contains(behavior.name) &&
-                    types[behavior.name]!!.size == behavior.parameterTypes.size) {
+                    types[behavior.name]!!.size == behavior.parameterTypes.size
+                ) {
                     var result = true
                     loop@ for((index, clazz) in types[behavior.name]!!.withIndex()) {
                         if(behavior.parameterTypes[index].name != clazz.canonicalName) {
@@ -220,7 +221,10 @@ object Builder {
 
                         if(!Modifier.isAbstract(behavior.modifiers) && !Modifier.isNative(behavior.modifiers))
                             behavior.returnType.normalTypeInitStatement()?.let { addStatement("return $it") }
-                        if(ctClass.isInterface && !Modifier.isStatic(behavior.modifiers) && !Modifier.isAbstract(behavior.modifiers)) addModifiers(Modifier2.DEFAULT)
+                        if(ctClass.isInterface && !Modifier.isStatic(behavior.modifiers) && !Modifier.isAbstract(
+                                behavior.modifiers
+                            )
+                        ) addModifiers(Modifier2.DEFAULT)
                         if(behavior.name != newName) addAnnotation(AnnotationSpec.get(RenameFrom(behavior.name), true))
                     }.build()
                 methodSpecs.add(methodSpec)
@@ -295,7 +299,7 @@ object Builder {
         }.apply {
             addCommonModifiers(ctClass.modifiers, this::addModifiers)
             if(!ctClass.isEnum) if(Modifier.isFinal(ctClass.modifiers)) addModifiers(Modifier2.FINAL)
-            if (isStrict) addModifiers(Modifier2.STRICTFP)
+            if(isStrict) addModifiers(Modifier2.STRICTFP)
 
             addMethods(methodSpecs)
 
@@ -306,7 +310,8 @@ object Builder {
             }
 
             ctClass.annotations.map(Any::getAnnotationTypeName).forEach(this::addAnnotation)
-            ctClass.interfaces.filter { it.name != "java.lang.annotation.Annotation" }.map { it.toTypeName() }.forEach(this::addSuperinterface)
+            ctClass.interfaces.filter { it.name != "java.lang.annotation.Annotation" }.map { it.toTypeName() }
+                .forEach(this::addSuperinterface)
         }
     }
 
@@ -322,7 +327,7 @@ object Builder {
         cp: ClassPool
     ) {
         var index = 0
-        val classList_ = classTree.sortedBy { (it.value as String).count { c -> c == '$'} }
+        val classList_ = classTree.sortedBy { (it.value as String).count { c -> c == '$' } }
         val classRenames = mutableMapOf<String, String>()
 
         val renameMap = classList_
@@ -379,7 +384,8 @@ object Builder {
                 classMap
             }
         classList_.onEach {
-            it.value = Descriptor.toJavaName(renameMap[Descriptor.toJvmName(it.value as String)] ?: (it.value as String))
+            it.value =
+                Descriptor.toJavaName(renameMap[Descriptor.toJvmName(it.value as String)] ?: (it.value as String))
         }.map { cp.get(it.value as String) }.forEach { it.replaceClassName(renameMap) }
     }
 
@@ -425,10 +431,12 @@ private val CtMethod.isOverride: Boolean
         fun checkIfMethodInClass(target: CtClass): Boolean {
             return target.declaredMethods.let { methods ->
                 if(Modifier.isStatic(this.modifiers)
-                        || Modifier.isAbstract(this.modifiers)) return@let false
+                    || Modifier.isAbstract(this.modifiers)
+                ) return@let false
                 loop@ for(ctMethod in methods) {
                     if(ctMethod.name != this.name || Modifier.isPrivate(ctMethod.modifiers)
-                        || this.parameterTypes.size != ctMethod.parameterTypes.size) continue
+                        || this.parameterTypes.size != ctMethod.parameterTypes.size
+                    ) continue
                     for((index, clazz) in this.parameterTypes!!.withIndex()) {
                         if(ctMethod.parameterTypes[index] != clazz) {
                             continue@loop
@@ -495,7 +503,8 @@ private fun CtClass.toTypeName(): TypeName {
     val clazzName = if(baseType != null) {
         TypeName.get(baseType)
     } else if(outerClass.name.contains("$")) {
-        val allName = innerPattern.findAll(".${outerClass.name.removePrefix(outerClass.packageName)}").toList().map(MatchResult::value)
+        val allName = innerPattern.findAll(".${outerClass.name.removePrefix(outerClass.packageName)}").toList()
+            .map(MatchResult::value)
         ClassName.get(outerClass.packageName, allName[0], *allName.run { takeLast(size - 1).toTypedArray() })
     } else {
         ClassName.get(outerClass.packageName, outerClass.simpleName)
@@ -528,9 +537,11 @@ private fun CtClass.toClass0_(): Class<*> = try {
         "boolean" -> Boolean::class.java
         "void" -> Void.TYPE
         else -> {
-            Class.forName(Descriptor.toJavaName(
-                if(isArray) Descriptor.of(this) else name
-            ), false, Builder.urlClassLoader)
+            Class.forName(
+                Descriptor.toJavaName(
+                    if(isArray) Descriptor.of(this) else name
+                ), false, Builder.urlClassLoader
+            )
         }
     }
 
@@ -568,7 +579,7 @@ private val CtClass.innerName: String
  * 获取[CtClass.getSimpleName] (以‘$'分割) 的倒数第二个元素
  */
 private fun getInnerName2(name: String) = innerPattern.findAll(name).toList().let {
-        it[max(0, it.size - 2)].value
-    }
+    it[max(0, it.size - 2)].value
+}
 
 private typealias Modifier2 = javax.lang.model.element.Modifier

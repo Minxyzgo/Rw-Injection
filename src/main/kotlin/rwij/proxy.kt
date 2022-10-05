@@ -16,12 +16,13 @@ fun <T> Any.setFunction(source: KFunction<T>, target: KFunction<T>) {
         throw IllegalAccessException("unsupported proxy object")
     }
 
-    val method = this::class.java.getMethod(source.name, *source.parameters.map { it.type.jvmErasure.java }.toTypedArray())
-    ClassBuilder.addProxy(method, target)
+    val method =
+        this::class.java.getMethod(source.name, *source.parameters.map { it.type.jvmErasure.java }.toTypedArray())
+    ProxyFactory.addProxy(method, target)
 }
 
 @Suppress("unused")
-object ClassBuilder {
+object ProxyFactory {
     val pool: ClassPool
     val classTree: NodeTree
 
@@ -43,7 +44,7 @@ object ClassBuilder {
             clazz.addField(
                 CtField.make(
                     """
-                        private final javassist.util.proxy.MethodHandler __proxy__handler__ = rwij.ClassBuilder.getHandler();
+                        private final javassist.util.proxy.MethodHandler __proxy__handler__ = rwij.ProxyFactory.getHandler();
                     """.trimIndent(), clazz
                 )
             )
@@ -58,16 +59,18 @@ object ClassBuilder {
                 proceed.modifiers = proceed.modifiers and accessModifiers.inv() or Modifier.PRIVATE
                 clazz.addMethod(proceed)
                 val sig = "\$sig"
-                it.setBody("""
+                it.setBody(
+                    """
                     {
                         Class clazz = this.getClass();
-                        java.lang.reflect.Method m1 = clazz.getDeclaredMethod(${it.name}, $sig);
+                        java.lang.reflect.Method m1 = clazz.getDeclaredMethod("${it.name}", $sig);
                         m1.setAccessible(true);
-                        java.lang.reflect.Method m2 = clazz.getDeclaredMethod(__proxy__${it.name}, $sig);
+                        java.lang.reflect.Method m2 = clazz.getDeclaredMethod("__proxy__${it.name}", $sig);
                         m2.setAccessible(true);
                         this.__proxy__handler__.invoke(this, m1, m2, $$);
                     }
-                """.trimIndent())
+                """.trimIndent()
+                )
             }
         } else {
             throw IllegalAccessException()
@@ -75,7 +78,7 @@ object ClassBuilder {
     }
 
     @JvmStatic
-    fun getHandler(): MethodHandler =  MethodHandler { self, thisMethod, proceed, args ->
+    fun getHandler(): MethodHandler = MethodHandler { self, thisMethod, proceed, args ->
         val kf = methodMap[thisMethod]
         if(kf != null) {
             kf.call(self, args)
@@ -92,5 +95,7 @@ object ClassBuilder {
         classTree.forEach { cl.loadClass(it.value as String) }
     }
 
-    fun addProxy(method: Method, kf: KFunction<*>) { methodMap[method] = kf }
+    fun addProxy(method: Method, kf: KFunction<*>) {
+        methodMap[method] = kf
+    }
 }

@@ -20,7 +20,7 @@ plugins {
     java
 }
 
-group = "rwij"
+group = "com.github.minxyzgo"
 version = "1.0-SNAPSHOT"
 
 sourceSets.main.configure {
@@ -34,16 +34,25 @@ with(java) {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-dependencies {
-    implementation("org.javassist:javassist:3.29.2-GA")
-    implementation("com.squareup:javapoet:1.13.0")
-    implementation(fileTree("dir" to "$rootDir/lib", "exclude" to "xxx.jar", "include" to "*.jar"))
-    //kapt(project(":annotations", configuration = "default"))
-    implementation(kotlin("reflect"))
+project(":annotations") {
+    addDependencies()
 }
+
+addDependencies()
 
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
+}
+
+fun Project.addDependencies() {
+    dependencies {
+        implementation("org.javassist:javassist:3.29.2-GA")
+        implementation("com.squareup:javapoet:1.13.0")
+        implementation(fileTree("dir" to "$rootDir/lib", "exclude" to "xxx.jar", "include" to "*.jar"))
+        implementation(kotlin("reflect"))
+
+        testImplementation(project(":source"))
+    }
 }
 //
 //task("start", Jar::class) {
