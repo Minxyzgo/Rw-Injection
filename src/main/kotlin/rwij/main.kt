@@ -19,6 +19,7 @@ fun main(args: Array<String>) {
             }
             Builder.build(sourceFile, modTime)
             timeTempFile.writeText(latestModTime.toString())
+            Builder.buildJar(File("annotations\\src\\main\\resources\\game-lib-output.jar"), Builder.tree, Builder.pool)
         }
         else -> throw IllegalArgumentException("unknown param: $param")
     }

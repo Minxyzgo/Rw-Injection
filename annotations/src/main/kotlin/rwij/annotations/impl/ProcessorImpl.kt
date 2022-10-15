@@ -43,7 +43,7 @@ internal class ProcessorImpl : AbstractProcessor() {
             })
         }
 
-        val (cp, classTree) = Builder.buildNewClassTree()
+        val (cp, classTree) = Builder.buildNewClassTree("game-lib-output.jar")
         allData.forEach { (name, type, declaringClassName, rename, args) ->
             val clazz = cp[declaringClassName]
             if(type == RenameType.Field) {

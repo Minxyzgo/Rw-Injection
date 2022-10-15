@@ -2,11 +2,16 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-kapt")
+    apply(plugin = "maven-publish")
 
     repositories {
         mavenCentral()
         maven("https://jitpack.io")
     }
+}
+
+allprojects {
+    publish()
 }
 
 repositories {
@@ -15,6 +20,7 @@ repositories {
 }
 
 plugins {
+    id("maven-publish")
     kotlin("jvm") version "1.7.0"
     kotlin("kapt") version "1.7.0"
     java
@@ -70,6 +76,26 @@ tasks.jar {
         }
     }
 }
+
+task("publishAll") {
+    dependsOn(rootProject.tasks.getByName("publishToMavenLocal"))
+    dependsOn(project(":source").tasks.getByName("publishToMavenLocal"))
+}
+
+fun Project.publish() {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                groupId = "com.github.minxyzgo"
+                artifactId = this@publish.name
+                version = this@publish.version.toString()
+
+                from(components.getByName("java"))
+            }
+        }
+    }
+}
+
 
 //
 //task("start", Jar::class) {

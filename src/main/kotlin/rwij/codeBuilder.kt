@@ -22,6 +22,7 @@ import kotlin.math.max
  */
 object Builder {
     lateinit var pool: ClassPool
+    lateinit var tree: NodeTree
 
     private val ignoreMethodTypes = run {
         val commonMap = mapOf<String, List<Class<*>>>(
@@ -46,7 +47,9 @@ object Builder {
 
     fun buildNewClassTree(resource: String = "game-lib.jar"): Pair<ClassPool, NodeTree> {
         val packageList: List<String>
-        val cp = ClassPool.getDefault()
+        val def = ClassPool.getDefault()
+        val child = ClassPool(def)
+        child.childFirstLookup = true
         //用于解析内部类
         val classTree = NodeTree()
         // classTree struct:
@@ -54,6 +57,8 @@ object Builder {
         class name - class data
          */
         val cl = javaClass.classLoader
+        def.appendClassPath(LoaderClassPath(cl))
+
         cl.getResourceAsStream(resource)!!.use { lib ->
             val tempFile = File.createTempFile("$resource-temp", ".jar")
             tempFile.deleteOnExit()
@@ -69,12 +74,11 @@ object Builder {
                 }.forEach(classTree::addChild)
             }
 
-            cp.appendClassPath(tempFile.absolutePath)
-            cp.appendClassPath(LoaderClassPath(cl))
+            child.appendClassPath(tempFile.absolutePath)
         }
 
-        deobfuscation(packageList, classTree, cp)
-        return cp to classTree
+        deobfuscation(packageList, classTree, child)
+        return child to classTree
     }
 
     fun buildJar(jar: File, classTree: NodeTree, cp: ClassPool) {
@@ -98,6 +102,7 @@ object Builder {
         val pair = buildNewClassTree()
         pool = pair.first
         classTree = pair.second
+        tree = classTree
         buildCode(file, classTree, modTime)
     }
 
