@@ -27,7 +27,7 @@ plugins {
 }
 
 group = "com.github.minxyzgo"
-version = "1.0"
+version = "1.2"
 
 sourceSets.main.configure {
     java {
@@ -44,10 +44,8 @@ project(":annotations") {
     addDependencies()
 }
 
-addDependencies()
-
-tasks.test {
-    useJUnitPlatform()
+project(":core") {
+    addDependencies()
 }
 
 tasks.withType(JavaCompile::class) {
@@ -67,19 +65,10 @@ fun Project.addDependencies() {
     }
 }
 
-tasks.jar {
-    doLast {
-        project(":source").copySpec {
-            from(buildDir) {
-                include("game-lib.jar")
-            }
-        }
-    }
-}
-
 task("publishAll") {
     dependsOn(rootProject.tasks.getByName("publishMavenPublicationToMavenLocal"))
     dependsOn(project(":source").tasks.getByName("publishMavenPublicationToMavenLocal"))
+    dependsOn(project(":core").tasks.getByName("publishMavenPublicationToMavenLocal"))
 }
 
 fun Project.publish() {

@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
     compileOnly("com.github.minxyzgo.rw-injection:source:master-SNAPSHOT") //添加映射库
-    implementation("com.github.minxyzgo:rw-injection:master-SNAPSHOT")
+    implementation("com.github.minxyzgo.rw-injection:core:master-SNAPSHOT")
 }
 ```
 

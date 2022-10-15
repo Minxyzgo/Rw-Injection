@@ -2,3 +2,4 @@
 /build/
 /annotations/build/
 /.gradle/
+/core/build/
