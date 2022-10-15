@@ -27,7 +27,7 @@ plugins {
 }
 
 group = "com.github.minxyzgo"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 sourceSets.main.configure {
     java {
@@ -78,8 +78,8 @@ tasks.jar {
 }
 
 task("publishAll") {
-    dependsOn(rootProject.tasks.getByName("publishToMavenLocal"))
-    dependsOn(project(":source").tasks.getByName("publishToMavenLocal"))
+    dependsOn(rootProject.tasks.getByName("publishMavenPublicationToMavenLocal"))
+    dependsOn(project(":source").tasks.getByName("publishMavenPublicationToMavenLocal"))
 }
 
 fun Project.publish() {
