@@ -3,7 +3,7 @@ package com.corrodinggames.rts.gameFramework.b;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.r;
@@ -34,7 +34,7 @@ public class a {
 
     public al d;
 
-    public m e;
+    public Team e;
 
     public int f;
 
@@ -44,7 +44,7 @@ public class a {
 
     public boolean i;
 
-    public m j;
+    public Team j;
 
     public boolean k;
 
@@ -85,11 +85,11 @@ public class a {
     public static void b(float p0) {
     }
 
-    public static boolean a(m p0, int p1, int p2, int p3) {
+    public static boolean a(Team p0, int p1, int p2, int p3) {
         return false;
     }
 
-    public static boolean a(m p0, r p1, int p2) {
+    public static boolean a(Team p0, r p1, int p2) {
         return false;
     }
 
@@ -97,11 +97,11 @@ public class a {
         return false;
     }
 
-    public static boolean a(m p0, RectF p1, int p2) {
+    public static boolean a(Team p0, RectF p1, int p2) {
         return false;
     }
 
-    public static a a(m p0, float p1, float p2) {
+    public static a a(Team p0, float p1, float p2) {
         return null;
     }
 

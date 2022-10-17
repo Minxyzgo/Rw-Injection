@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.h;
 
 import android.graphics.Point;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.r;
 import java.util.HashMap;
@@ -47,13 +47,13 @@ public final strictfp class e {
     void a(r p0) {
     }
 
-    final void a(b p0, short p1, short p2, byte[] p3) {
+    final void a(MapLoader p0, short p1, short p2, byte[] p3) {
     }
 
     void b(r p0) {
     }
 
-    final byte a(b p0, short p1, short p2) {
+    final byte a(MapLoader p0, short p1, short p2) {
         return 0;
     }
 
@@ -68,7 +68,7 @@ public final strictfp class e {
         return false;
     }
 
-    public static int a(b p0) {
+    public static int a(MapLoader p0) {
         return 0;
     }
 

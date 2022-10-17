@@ -2,17 +2,17 @@ package com.corrodinggames.rts.gameFramework.d;
 
 import android.graphics.Paint;
 import com.corrodinggames.rts.game.units.af;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import java.util.ArrayList;
 
 public strictfp class y {
-    private l33 a;
+    private GameEngine a;
 
     private Paint b;
 
     private ArrayList c;
 
-    public y(l33 p0) {
+    public y(GameEngine p0) {
         super();
     }
 

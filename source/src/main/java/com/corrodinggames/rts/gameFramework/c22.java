@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.gameFramework;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import java.util.ArrayList;
 
 public strictfp class c22 {
@@ -23,11 +23,11 @@ public strictfp class c22 {
         return null;
     }
 
-    public e25 a(m p0) {
+    public e25 a(Team p0) {
         return null;
     }
 
-    public e25 b(m p0) {
+    public e25 b(Team p0) {
         return null;
     }
 

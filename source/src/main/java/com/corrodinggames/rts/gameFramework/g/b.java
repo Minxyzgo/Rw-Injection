@@ -7,13 +7,13 @@ public class b {
 
     String c;
 
-    c d;
+    Connection d;
 
     long e;
 
     final a f = null;
 
-    b(a p0, int p1, String p2, String p3, c p4) {
+    b(a p0, int p1, String p2, String p3, Connection p4) {
         super();
     }
 

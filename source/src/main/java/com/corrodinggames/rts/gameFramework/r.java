@@ -8,7 +8,7 @@ class r extends p {
     public boolean d;
 
     @Additional
-    public r(l33 p0) {
+    public r(GameEngine p0) {
         super(p0);
     }
 }

@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.f;
 import com.corrodinggames.rts.game.units.a.c;
 import com.corrodinggames.rts.game.units.a.s;
@@ -19,9 +20,10 @@ import com.corrodinggames.rts.game.units.d15;
 import com.corrodinggames.rts.game.units.p;
 import com.corrodinggames.rts.game.units.r;
 import com.corrodinggames.rts.game.units.z;
-import com.corrodinggames.rts.gameFramework.g.ap;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.ag;
 import com.corrodinggames.rts.gameFramework.utility.m;
 import java.util.ArrayList;
@@ -135,11 +137,11 @@ public final strictfp class k extends p implements ad, d15, com.corrodinggames.r
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(com.corrodinggames.rts.gameFramework.g.k p0) {
+    public void a(GameInputStream p0) {
     }
 
     @Override
@@ -922,7 +924,7 @@ public final strictfp class k extends p implements ad, d15, com.corrodinggames.r
     }
 
     @Override
-    public void d(com.corrodinggames.rts.game.m p0) {
+    public void d(Team p0) {
     }
 
     @Override
@@ -1250,7 +1252,7 @@ public final strictfp class k extends p implements ad, d15, com.corrodinggames.r
     }
 
     @Override
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 
@@ -1326,7 +1328,7 @@ public final strictfp class k extends p implements ad, d15, com.corrodinggames.r
     }
 
     @Override
-    public void c(com.corrodinggames.rts.game.m p0) {
+    public void c(Team p0) {
     }
 
     @Override

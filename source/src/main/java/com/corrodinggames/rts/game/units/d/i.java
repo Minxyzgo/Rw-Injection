@@ -6,8 +6,8 @@ import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.custom.g;
 import com.corrodinggames.rts.gameFramework.bi;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 
 public strictfp class i extends bi {
     public int a;
@@ -37,9 +37,9 @@ public strictfp class i extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 }

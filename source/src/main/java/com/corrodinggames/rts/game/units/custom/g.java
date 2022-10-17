@@ -2,9 +2,9 @@ package com.corrodinggames.rts.game.units.custom;
 
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.custom.d.d;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public class g implements Comparable {
     private static final d l = null;
@@ -51,11 +51,11 @@ public class g implements Comparable {
         return null;
     }
 
-    public static g a(l p0, ab p1, String p2, String p3, boolean p4) {
+    public static g a(l p0, ModIniLoader p1, String p2, String p3, boolean p4) {
         return null;
     }
 
-    public static g a(l p0, ab p1, String p2, String p3, g p4) {
+    public static g a(l p0, ModIniLoader p1, String p2, String p3, g p4) {
         return null;
     }
 
@@ -148,10 +148,10 @@ public class g implements Comparable {
         return 0;
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public static g a(k p0) {
+    public static g a(GameInputStream p0) {
         return null;
     }
 

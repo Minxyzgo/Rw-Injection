@@ -4,7 +4,7 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.r;
@@ -134,7 +134,7 @@ public final class y {
         return false;
     }
 
-    public static strictfp void a(m p0, PointF p1) {
+    public static strictfp void a(Team p0, PointF p1) {
     }
 
     public static strictfp void a(af p0, r p1) {

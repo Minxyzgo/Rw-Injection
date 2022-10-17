@@ -2,8 +2,8 @@ package com.corrodinggames.rts.gameFramework;
 
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.utility.o;
 import com.corrodinggames.rts.gameFramework.utility.s;
 
@@ -44,10 +44,10 @@ public abstract strictfp class w extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public abstract void a(float p0);
@@ -65,7 +65,7 @@ public abstract strictfp class w extends bi {
 
     public abstract boolean f(float p0);
 
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 

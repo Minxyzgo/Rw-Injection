@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.z;
 import com.corrodinggames.rts.game.units.custom.aj;
 import com.corrodinggames.rts.game.units.custom.g;
@@ -335,16 +335,16 @@ public enum ak implements al {
     public static void t() {
     }
 
-    public static boolean a(al p0, float p1, float p2, float p3, float p4, m p5) {
+    public static boolean a(al p0, float p1, float p2, float p3, float p4, Team p5) {
         return false;
     }
 
-    public static void a(al p0, float p1, float p2, float p3, float p4, m p5, float p6, float p7,
-            boolean p8, boolean p9, int p10) {
+    public static void a(al p0, float p1, float p2, float p3, float p4, Team p5, float p6, float p7,
+                         boolean p8, boolean p9, int p10) {
     }
 
-    public static void a(al p0, float p1, float p2, float p3, float p4, m p5, float p6, float p7,
-            boolean p8, boolean p9, int p10, boolean p11) {
+    public static void a(al p0, float p1, float p2, float p3, float p4, Team p5, float p6, float p7,
+                         boolean p8, boolean p9, int p10, boolean p11) {
     }
 
     public int b(int p0) {

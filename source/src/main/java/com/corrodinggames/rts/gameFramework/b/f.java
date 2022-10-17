@@ -1,8 +1,8 @@
 package com.corrodinggames.rts.gameFramework.b;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.w;
 
 public strictfp class f extends w {
@@ -62,11 +62,11 @@ public strictfp class f extends w {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public static void a(e p0, boolean p1) {
@@ -96,7 +96,7 @@ public strictfp class f extends w {
     }
 
     @Override
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 

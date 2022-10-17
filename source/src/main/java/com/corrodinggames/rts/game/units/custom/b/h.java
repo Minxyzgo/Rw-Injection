@@ -3,7 +3,7 @@ package com.corrodinggames.rts.game.units.custom.b;
 import com.corrodinggames.rts.game.units.custom.k;
 import com.corrodinggames.rts.game.units.custom.l;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public final strictfp class h extends a {
@@ -13,10 +13,10 @@ public final strictfp class h extends a {
         super();
     }
 
-    public static void a(l p0, ab p1) {
+    public static void a(l p0, ModIniLoader p1) {
     }
 
-    public static void a(i p0, l p1, ab p2, String p3, String p4) {
+    public static void a(i p0, l p1, ModIniLoader p2, String p3, String p4) {
     }
 
     @Override

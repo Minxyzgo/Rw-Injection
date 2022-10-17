@@ -1,9 +1,9 @@
 package com.corrodinggames.rts.java;
 
 import com.corrodinggames.rts.gameFramework.g.ac;
-import com.corrodinggames.rts.gameFramework.g.ad;
-import com.corrodinggames.rts.gameFramework.g.ae;
-import com.corrodinggames.rts.gameFramework.g.c;
+import com.corrodinggames.rts.gameFramework.g.Network;
+import com.corrodinggames.rts.gameFramework.g.ResponsePacket;
+import com.corrodinggames.rts.gameFramework.g.Connection;
 import com.corrodinggames.rts.gameFramework.n;
 import com.corrodinggames.rts.gameFramework.utility.ah;
 import com.corrodinggames.rts.java.b.a;
@@ -26,7 +26,7 @@ public class Main extends ac {
 
     boolean g;
 
-    public ad h;
+    public Network h;
 
     a i;
 
@@ -90,12 +90,12 @@ public class Main extends ac {
     }
 
     @Override
-    public boolean a(c p0, String p1, String p2) {
+    public boolean a(Connection p0, String p1, String p2) {
         return false;
     }
 
     @Override
-    public void b(c p0, String p1, String p2) {
+    public void b(Connection p0, String p1, String p2) {
     }
 
     @Override
@@ -103,23 +103,23 @@ public class Main extends ac {
     }
 
     @Override
-    public void a(int p0, String p1, String p2, c p3) {
+    public void a(int p0, String p1, String p2, Connection p3) {
     }
 
-    public void a(c p0, String p1, String p2, boolean p3) {
+    public void a(Connection p0, String p1, String p2, boolean p3) {
     }
 
     @Override
-    public String a(c p0, String p1) {
+    public String a(Connection p0, String p1) {
         return null;
     }
 
     @Override
-    public void c(c p0, String p1, String p2) {
+    public void c(Connection p0, String p1, String p2) {
     }
 
     @Override
-    public void b(c p0, String p1) {
+    public void b(Connection p0, String p1) {
     }
 
     public void i() {
@@ -130,7 +130,7 @@ public class Main extends ac {
     }
 
     @Override
-    public void a(ae p0) {
+    public void a(ResponsePacket p0) {
     }
 
     /**
@@ -188,11 +188,11 @@ public class Main extends ac {
 
         final String c = null;
 
-        final c d = null;
+        final Connection d = null;
 
         final Main e = null;
 
-        Main281(Main p0, int p1, String p2, String p3, c p4) {
+        Main281(Main p0, int p1, String p2, String p3, Connection p4) {
             super();
         }
 

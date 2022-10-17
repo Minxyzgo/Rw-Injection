@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.custom;
 
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public strictfp class m {
     public boolean a;
@@ -17,7 +17,7 @@ public strictfp class m {
         super();
     }
 
-    public static m a(l p0, ab p1, String p2, String p3, boolean p4) {
+    public static m a(l p0, ModIniLoader p1, String p2, String p3, boolean p4) {
         return null;
     }
 }

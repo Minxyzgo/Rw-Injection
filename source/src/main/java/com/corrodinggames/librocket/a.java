@@ -3,7 +3,7 @@ package com.corrodinggames.librocket;
 import com.corrodinggames.librocket.scripts.Root;
 import com.corrodinggames.librocket.scripts.ScriptEngine;
 import com.corrodinggames.rts.a.d;
-import com.corrodinggames.rts.gameFramework.g.ae;
+import com.corrodinggames.rts.gameFramework.g.ResponsePacket;
 import com.corrodinggames.rts.gameFramework.utility.k;
 import java.util.LinkedList;
 
@@ -86,7 +86,7 @@ public abstract class a {
     public void n() {
     }
 
-    public void a(ae p0) {
+    public void a(ResponsePacket p0) {
     }
 
     /**
@@ -112,11 +112,11 @@ public abstract class a {
 
         final ScriptEngine b = null;
 
-        final ae c = null;
+        final ResponsePacket c = null;
 
         final a d = null;
 
-        a50(a p0, ScriptEngine p1, ae p2) {
+        a50(a p0, ScriptEngine p1, ResponsePacket p2) {
             super();
         }
 

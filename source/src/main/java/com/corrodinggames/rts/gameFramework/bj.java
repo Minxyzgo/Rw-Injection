@@ -6,7 +6,7 @@ import android.graphics.Rect;
 public final class bj {
     public static int c;
 
-    l33 a;
+    GameEngine a;
 
     public int b;
 
@@ -20,7 +20,7 @@ public final class bj {
 
     int h;
 
-    public bj(l33 p0) {
+    public bj(GameEngine p0) {
         super();
     }
 

@@ -4,7 +4,7 @@ import android.content.Context;
 import com.corrodinggames.rts.gameFramework.a.h;
 import com.corrodinggames.rts.gameFramework.a.i;
 import com.corrodinggames.rts.gameFramework.utility.ad;
-import com.corrodinggames.rts.gameFramework.utility.j;
+import com.corrodinggames.rts.gameFramework.utility.FileInputStreamPackage;
 import com.corrodinggames.rts.java.audio.lwjgl.OpenALAudio;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -39,7 +39,7 @@ public class n extends h {
     }
 
     @Override
-    public i a(String p0, j p1, boolean p2) {
+    public i a(String p0, FileInputStreamPackage p1, boolean p2) {
         return null;
     }
 

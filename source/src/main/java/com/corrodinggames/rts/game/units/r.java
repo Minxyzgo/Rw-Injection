@@ -5,15 +5,16 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuffColorFilter;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.a.h;
 import com.corrodinggames.rts.game.a.i;
 import com.corrodinggames.rts.game.units.f.j;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.h.g;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.j.q;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.ag;
 import com.corrodinggames.rts.gameFramework.utility.m;
 import java.util.ArrayList;
@@ -241,15 +242,15 @@ public abstract strictfp class r extends c6 {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     @Override
-    public void a(com.corrodinggames.rts.game.m p0) {
+    public void a(Team p0) {
     }
 
     public void Q() {
@@ -294,7 +295,7 @@ public abstract strictfp class r extends c6 {
     public void a(float p0) {
     }
 
-    private void a(float p0, l33 p1, float p2, float p3) {
+    private void a(float p0, GameEngine p1, float p2, float p3) {
     }
 
     public void b(float p0, float p1) {
@@ -396,7 +397,7 @@ public abstract strictfp class r extends c6 {
     private void a(float p0, y p1, w p2, an p3) {
     }
 
-    private void a(l33 p0, float p1, an p2, w p3) {
+    private void a(GameEngine p0, float p1, an p2, w p3) {
     }
 
     private void a(float p0, w p1, an p2, boolean p3) {
@@ -415,21 +416,21 @@ public abstract strictfp class r extends c6 {
         return null;
     }
 
-    private void a(l33 p0, float p1, float p2) {
+    private void a(GameEngine p0, float p1, float p2) {
     }
 
     public boolean aa() {
         return false;
     }
 
-    private void a(l33 p0, float p1) {
+    private void a(GameEngine p0, float p1) {
     }
 
     public boolean ab() {
         return false;
     }
 
-    private void b(l33 p0, float p1) {
+    private void b(GameEngine p0, float p1) {
     }
 
     public void b(af p0, int p1) {
@@ -665,7 +666,7 @@ public abstract strictfp class r extends c6 {
         return null;
     }
 
-    void b(l33 p0) {
+    void b(GameEngine p0) {
     }
 
     public long aI() {

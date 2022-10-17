@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.g;
 
 import android.graphics.PointF;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.r;
@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.LinkedList;
 
-public strictfp class at extends ap {
+public strictfp class at extends GameOutputStream {
     ByteArrayOutputStream a;
 
     PrintStream e;
@@ -38,12 +38,12 @@ public strictfp class at extends ap {
     }
 
     @Override
-    public ar b(int p0) {
+    public PacketData b(int p0) {
         return null;
     }
 
     @Override
-    public ar a(int p0, int p1) {
+    public PacketData a(int p0, int p1) {
         return null;
     }
 
@@ -118,11 +118,11 @@ public strictfp class at extends ap {
     }
 
     @Override
-    public void a(c p0) {
+    public void a(Connection p0) {
     }
 
     @Override
-    public void a(m p0) {
+    public void a(Team p0) {
     }
 
     @Override

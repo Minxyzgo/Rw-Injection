@@ -1,8 +1,8 @@
 package com.corrodinggames.rts.gameFramework.d;
 
 import com.corrodinggames.rts.gameFramework.bi;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.ArrayList;
 
 public class v extends bi {
@@ -38,10 +38,10 @@ public class v extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public void d() {

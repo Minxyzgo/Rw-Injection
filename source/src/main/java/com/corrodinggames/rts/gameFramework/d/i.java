@@ -1,13 +1,13 @@
 package com.corrodinggames.rts.gameFramework.d;
 
 import android.graphics.Paint;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import java.util.ArrayList;
 
 public class i {
     f a;
 
-    l33 b;
+    GameEngine b;
 
     Paint c;
 
@@ -15,7 +15,7 @@ public class i {
 
     ArrayList e;
 
-    i(l33 p0, f p1) {
+    i(GameEngine p0, f p1) {
         super();
     }
 

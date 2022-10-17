@@ -13,13 +13,13 @@ import com.corrodinggames.rts.gameFramework.be;
 import com.corrodinggames.rts.gameFramework.bf;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.j.h;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.s;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public strictfp class i extends l33 {
+public strictfp class i extends GameEngine {
     public static String a;
 
     public static boolean b;
@@ -288,7 +288,7 @@ public strictfp class i extends l33 {
     void d(float p0) {
     }
 
-    af a(m p0) {
+    af a(Team p0) {
         return null;
     }
 

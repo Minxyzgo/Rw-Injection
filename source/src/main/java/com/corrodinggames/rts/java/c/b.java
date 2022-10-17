@@ -5,6 +5,7 @@ import com.codedisaster.steamworks.SteamID;
 import com.codedisaster.steamworks.SteamMatchmaking;
 import com.codedisaster.steamworks.SteamNetworking;
 import com.codedisaster.steamworks.SteamUtils;
+import com.corrodinggames.rts.gameFramework.g.Connection;
 import com.corrodinggames.rts.gameFramework.l.a;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -83,7 +84,7 @@ public class b extends a {
     public void a(SteamID p0) {
     }
 
-    public com.corrodinggames.rts.gameFramework.g.c b(SteamID p0) {
+    public Connection b(SteamID p0) {
         return null;
     }
 

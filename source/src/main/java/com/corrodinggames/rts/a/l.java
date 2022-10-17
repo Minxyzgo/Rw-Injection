@@ -4,14 +4,14 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.widget.EditText;
-import com.corrodinggames.rts.gameFramework.g.ae;
+import com.corrodinggames.rts.gameFramework.g.ResponsePacket;
 
 public class l extends b {
     public static l b;
 
     public static boolean d;
 
-    static ae f;
+    static ResponsePacket f;
 
     static AlertDialog g;
 
@@ -47,7 +47,7 @@ public class l extends b {
     public static void n() {
     }
 
-    public static void a(ae p0) {
+    public static void a(ResponsePacket p0) {
     }
 
     /**
@@ -73,9 +73,9 @@ public class l extends b {
     static final class l77 implements DialogInterface.OnClickListener {
         final EditText a = null;
 
-        final ae b = null;
+        final ResponsePacket b = null;
 
-        l77(EditText p0, ae p1) {
+        l77(EditText p0, ResponsePacket p1) {
             super();
         }
 
@@ -88,9 +88,9 @@ public class l extends b {
      * Rename from: com.corrodinggames.rts.a.l#3
      */
     static final class l78 implements DialogInterface.OnClickListener {
-        final ae a = null;
+        final ResponsePacket a = null;
 
-        l78(ae p0) {
+        l78(ResponsePacket p0) {
             super();
         }
 
@@ -103,9 +103,9 @@ public class l extends b {
      * Rename from: com.corrodinggames.rts.a.l#4
      */
     static final class l79 implements DialogInterface.OnCancelListener {
-        final ae a = null;
+        final ResponsePacket a = null;
 
-        l79(ae p0) {
+        l79(ResponsePacket p0) {
             super();
         }
 

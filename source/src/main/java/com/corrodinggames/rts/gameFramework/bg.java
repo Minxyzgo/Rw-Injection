@@ -1,9 +1,9 @@
 package com.corrodinggames.rts.gameFramework;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 
 public strictfp class bg {
     bh a;
@@ -14,10 +14,10 @@ public strictfp class bg {
         super();
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0, boolean p1) {
+    public void a(GameInputStream p0, boolean p1) {
     }
 
     public void a() {
@@ -27,7 +27,7 @@ public strictfp class bg {
         return null;
     }
 
-    public bh a(m p0) {
+    public bh a(Team p0) {
         return null;
     }
 

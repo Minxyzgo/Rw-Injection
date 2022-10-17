@@ -1,18 +1,18 @@
 package com.corrodinggames.rts.game.units.custom.e;
 
 import com.corrodinggames.rts.game.units.custom.l;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public class b {
-    public e a;
+    public HashMapPackage a;
 
-    public e b;
+    public HashMapPackage b;
 
     public b() {
         super();
     }
 
-    public b(e p0, e p1) {
+    public b(HashMapPackage p0, HashMapPackage p1) {
         super();
     }
 
@@ -31,11 +31,11 @@ public class b {
         return false;
     }
 
-    public String a(l p0, ab p1, String p2, String p3) {
+    public String a(l p0, ModIniLoader p1, String p2, String p3) {
         return null;
     }
 
-    public String b(l p0, ab p1, String p2, String p3) {
+    public String b(l p0, ModIniLoader p1, String p2, String p3) {
         return null;
     }
 

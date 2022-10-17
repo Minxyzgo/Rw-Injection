@@ -5,8 +5,8 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.custom.l;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public strictfp class c {
@@ -40,9 +40,9 @@ public strictfp class c {
     public void a(float p0, af p1) {
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(af p0, k p1) {
+    public void a(af p0, GameInputStream p1) {
     }
 }

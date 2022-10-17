@@ -2,9 +2,9 @@ package com.corrodinggames.rts.game.units;
 
 import android.graphics.Paint;
 import android.graphics.PointF;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 
 public strictfp class f17 extends q {
     static Paint k;
@@ -48,11 +48,11 @@ public strictfp class f17 extends q {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public ak b() {
@@ -86,7 +86,7 @@ public strictfp class f17 extends q {
     }
 
     @Override
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 

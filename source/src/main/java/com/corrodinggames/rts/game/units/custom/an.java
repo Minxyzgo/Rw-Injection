@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.units.custom;
 
 import com.corrodinggames.rts.game.f;
 import com.corrodinggames.rts.game.units.af;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public class an {
@@ -14,7 +14,7 @@ public class an {
         super();
     }
 
-    public static an a(l p0, ab p1, String p2, String p3, an p4) {
+    public static an a(l p0, ModIniLoader p1, String p2, String p3, an p4) {
         return null;
     }
 

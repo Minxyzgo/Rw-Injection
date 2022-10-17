@@ -5,6 +5,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.view.Menu;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.d;
 import com.corrodinggames.rts.game.units.a.s;
 import com.corrodinggames.rts.game.units.a.y;
@@ -13,11 +14,11 @@ import com.corrodinggames.rts.game.units.c6;
 import com.corrodinggames.rts.game.units.g.c;
 import com.corrodinggames.rts.gameFramework.ad;
 import com.corrodinggames.rts.gameFramework.bi;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.j.q;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.m;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +36,7 @@ public class a23 extends bi {
 
     f a;
 
-    l33 b;
+    GameEngine b;
 
     public boolean c;
 
@@ -213,7 +214,7 @@ public class a23 extends bi {
 
     ArrayList aQ;
 
-    a23(l33 p0, f p1) {
+    a23(GameEngine p0, f p1) {
         super();
     }
 
@@ -332,7 +333,7 @@ public class a23 extends bi {
     void a(float p0, int p1) {
     }
 
-    public String a(com.corrodinggames.rts.game.m p0) {
+    public String a(Team p0) {
         return null;
     }
 
@@ -386,10 +387,10 @@ public class a23 extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0, boolean p1) {
+    public void a(GameInputStream p0, boolean p1) {
     }
 
     public void p() {

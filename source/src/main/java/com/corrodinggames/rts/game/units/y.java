@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 
 public strictfp class y {
     public float a;
@@ -12,9 +12,9 @@ public strictfp class y {
         super();
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 }

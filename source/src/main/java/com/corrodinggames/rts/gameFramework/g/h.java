@@ -8,7 +8,7 @@ import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 
 public class h extends Socket {
-    c a;
+    Connection a;
 
     int b;
 
@@ -18,11 +18,11 @@ public class h extends Socket {
 
     j e;
 
-    public h(c p0, int p1) {
+    public h(Connection p0, int p1) {
         super();
     }
 
-    public void a(ar p0) {
+    public void a(PacketData p0) {
     }
 
     @Override

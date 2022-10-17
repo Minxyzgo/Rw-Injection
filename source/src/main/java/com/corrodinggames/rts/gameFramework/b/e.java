@@ -4,7 +4,7 @@ import android.graphics.LightingColorFilter;
 import android.graphics.Paint;
 import com.corrodinggames.rts.game.units.custom.ad;
 import com.corrodinggames.rts.gameFramework.j.q;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.w;
 
 public final class e {
@@ -184,6 +184,6 @@ public final class e {
     public void b(float p0) {
     }
 
-    public void a(l33 p0, boolean p1) {
+    public void a(GameEngine p0, boolean p1) {
     }
 }

@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units.custom.e;
 
 import com.corrodinggames.rts.game.units.custom.l;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import java.util.regex.Pattern;
 
 public class a {
@@ -11,6 +11,6 @@ public class a {
 
     static b c;
 
-    public static void a(l p0, ab p1) {
+    public static void a(l p0, ModIniLoader p1) {
     }
 }

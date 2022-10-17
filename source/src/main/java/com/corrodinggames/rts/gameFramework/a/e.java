@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.a;
 
 import android.content.Context;
-import com.corrodinggames.rts.gameFramework.utility.j;
+import com.corrodinggames.rts.gameFramework.utility.FileInputStreamPackage;
 import java.util.ArrayList;
 
 public class e {
@@ -105,7 +105,7 @@ public class e {
     public void a(i p0, float p1, float p2, float p3, float p4) {
     }
 
-    public i a(String p0, j p1, boolean p2) {
+    public i a(String p0, FileInputStreamPackage p1, boolean p2) {
         return null;
     }
 

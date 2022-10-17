@@ -4,7 +4,7 @@ import android.graphics.LightingColorFilter;
 import com.corrodinggames.rts.gameFramework.b.e;
 import com.corrodinggames.rts.gameFramework.b.g;
 import com.corrodinggames.rts.gameFramework.b.h;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import com.corrodinggames.rts.gameFramework.w;
 import java.util.ArrayList;
 
@@ -169,6 +169,6 @@ public class ad {
         return 0f;
     }
 
-    public void a(l p0, ab p1, String p2) {
+    public void a(l p0, ModIniLoader p1, String p2) {
     }
 }

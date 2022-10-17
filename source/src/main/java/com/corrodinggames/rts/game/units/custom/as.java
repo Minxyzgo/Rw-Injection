@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.units.custom;
 
 import com.corrodinggames.rts.game.units.custom.logicBooleans.LogicBoolean;
 import com.corrodinggames.rts.gameFramework.j.e;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public class as {
     public String a;
@@ -190,6 +190,6 @@ public class as {
     public void a(as p0) {
     }
 
-    public static void a(as p0, l p1, ab p2, String p3) {
+    public static void a(as p0, l p1, ModIniLoader p2, String p3) {
     }
 }

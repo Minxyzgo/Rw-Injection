@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.gameFramework.k.a;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.custom.h;
 import com.corrodinggames.rts.gameFramework.k.a31;
@@ -10,7 +10,7 @@ public class c extends a {
 
     Integer b;
 
-    m c;
+    Team c;
 
     al d;
 

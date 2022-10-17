@@ -7,9 +7,9 @@ strictfp class m {
 
     Paint b;
 
-    final l33 c = null;
+    final GameEngine c = null;
 
-    m(l33 p0) {
+    m(GameEngine p0) {
         super();
     }
 

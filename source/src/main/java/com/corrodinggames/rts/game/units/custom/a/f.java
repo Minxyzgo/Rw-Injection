@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.custom.a;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.u;
 import com.corrodinggames.rts.game.units.a.w;
 import com.corrodinggames.rts.game.units.af;
@@ -76,7 +76,7 @@ public class f extends w {
     }
 
     @Override
-    public boolean a(af p0, m p1) {
+    public boolean a(af p0, Team p1) {
         return false;
     }
 

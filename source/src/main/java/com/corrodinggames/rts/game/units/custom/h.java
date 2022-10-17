@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units.custom;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.ArrayList;
 
 public final class h {
@@ -33,10 +33,10 @@ public final class h {
         return null;
     }
 
-    public static void a(i p0, ap p1) {
+    public static void a(i p0, GameOutputStream p1) {
     }
 
-    public static i a(k p0) {
+    public static i a(GameInputStream p0) {
         return null;
     }
 

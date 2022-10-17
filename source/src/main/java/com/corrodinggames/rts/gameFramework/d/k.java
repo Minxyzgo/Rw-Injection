@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.j.i;
@@ -152,7 +152,7 @@ public class k {
         return 0;
     }
 
-    public void a(b p0, boolean p1) {
+    public void a(MapLoader p0, boolean p1) {
     }
 
     public void c() {

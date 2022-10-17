@@ -4,7 +4,7 @@ import com.corrodinggames.rts.game.units.custom.i;
 import com.corrodinggames.rts.game.units.custom.k;
 import com.corrodinggames.rts.game.units.custom.l;
 import com.corrodinggames.rts.game.units.custom.logicBooleans.LogicBoolean;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public strictfp class e extends a {
     LogicBoolean a;
@@ -21,10 +21,10 @@ public strictfp class e extends a {
         super();
     }
 
-    public static void a(l p0, ab p1) {
+    public static void a(l p0, ModIniLoader p1) {
     }
 
-    public void a(l p0, ab p1, String p2, String p3) {
+    public void a(l p0, ModIniLoader p1, String p2, String p3) {
     }
 
     @Override

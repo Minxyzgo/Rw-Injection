@@ -2,13 +2,13 @@ package com.corrodinggames.rts.game.units.d;
 
 import android.graphics.Paint;
 import android.graphics.Rect;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 
 public abstract strictfp class c extends r {
@@ -35,14 +35,14 @@ public abstract strictfp class c extends r {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
-    public static boolean a(al p0, float p1, float p2, m p3) {
+    public static boolean a(al p0, float p1, float p2, Team p3) {
         return false;
     }
 

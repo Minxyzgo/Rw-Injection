@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.io.File;
 
 public strictfp class y {
@@ -30,7 +30,7 @@ public strictfp class y {
     public void a(String p0) {
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     public String b(String p0) {
@@ -41,10 +41,10 @@ public strictfp class y {
         return false;
     }
 
-    public void a(String p0, ap p1) {
+    public void a(String p0, GameOutputStream p1) {
     }
 
-    public boolean a(k p0, boolean p1, boolean p2, boolean p3) {
+    public boolean a(GameInputStream p0, boolean p1, boolean p2, boolean p3) {
         return false;
     }
 

@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units.custom;
 
 import com.corrodinggames.rts.game.p;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public final class al {
     String a;
@@ -44,6 +44,6 @@ public final class al {
         return false;
     }
 
-    public void a(l p0, ab p1, String p2) {
+    public void a(l p0, ModIniLoader p1, String p2) {
     }
 }

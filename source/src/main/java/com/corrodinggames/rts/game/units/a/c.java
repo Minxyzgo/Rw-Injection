@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units.a;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.HashMap;
 
 public class c {
@@ -23,10 +23,10 @@ public class c {
         return null;
     }
 
-    public static void a(ap p0, c p1) {
+    public static void a(GameOutputStream p0, c p1) {
     }
 
-    public static c a(k p0) {
+    public static c a(GameInputStream p0) {
         return null;
     }
 }

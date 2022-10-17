@@ -1,8 +1,8 @@
 package com.corrodinggames.rts.gameFramework;
 
 import android.content.Context;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -72,7 +72,7 @@ public strictfp class ba {
 
     DataInputStream C;
 
-    k D;
+    GameInputStream D;
 
     FileOutputStream E;
 
@@ -80,7 +80,7 @@ public strictfp class ba {
 
     DataOutputStream G;
 
-    ap H;
+    GameOutputStream H;
 
     bb I;
 

@@ -1,8 +1,8 @@
 package com.corrodinggames.rts.gameFramework.h;
 
 import com.corrodinggames.rts.game.units.ah;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.LinkedList;
 
 public strictfp class g {
@@ -62,10 +62,10 @@ public strictfp class g {
         super();
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public void a() {

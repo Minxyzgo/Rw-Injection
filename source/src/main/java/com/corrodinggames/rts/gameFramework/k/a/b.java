@@ -1,11 +1,11 @@
 package com.corrodinggames.rts.gameFramework.k.a;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.custom.h;
 import com.corrodinggames.rts.gameFramework.k.a31;
 
 public class b extends a {
-    m a;
+    Team a;
 
     h b;
 

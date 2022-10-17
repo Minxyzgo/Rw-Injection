@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.h;
 
 import android.graphics.Paint;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.r;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public final strictfp class h {
 
     boolean m;
 
-    b n;
+    MapLoader n;
 
     int o;
 
@@ -116,7 +116,7 @@ public final strictfp class h {
         return false;
     }
 
-    public void a(b p0, boolean p1) {
+    public void a(MapLoader p0, boolean p1) {
     }
 
     public void a() {

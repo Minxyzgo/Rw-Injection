@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.java;
 
 import com.corrodinggames.rts.gameFramework.j.j;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import java.io.ByteArrayOutputStream;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
@@ -16,7 +16,7 @@ public class t extends BasicGame {
 
     j d;
 
-    l33 e;
+    GameEngine e;
 
     d37 f;
 

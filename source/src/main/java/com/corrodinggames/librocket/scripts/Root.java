@@ -6,9 +6,9 @@ import com.corrodinggames.librocket.e;
 import com.corrodinggames.rts.gameFramework.ad;
 import com.corrodinggames.rts.gameFramework.bl;
 import com.corrodinggames.rts.gameFramework.g.al;
-import com.corrodinggames.rts.gameFramework.g.c;
+import com.corrodinggames.rts.gameFramework.g.Connection;
 import com.corrodinggames.rts.gameFramework.i.b;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import java.util.ArrayList;
 
 public class Root extends ScriptContext {
@@ -385,7 +385,7 @@ public class Root extends ScriptContext {
     public void sendTeamChatMessage(String p0) {
     }
 
-    public void receiveChatMessage(int p0, String p1, String p2, c p3) {
+    public void receiveChatMessage(int p0, String p1, String p2, Connection p3) {
     }
 
     public void refreshChat() {
@@ -579,11 +579,11 @@ public class Root extends ScriptContext {
      * Rename from: com.corrodinggames.librocket.scripts.Root#5
      */
     class Root56 implements Runnable {
-        final l33 val$game = null;
+        final GameEngine val$game = null;
 
         final String val$saveName = null;
 
-        Root56(Root p0, l33 p1, String p2) {
+        Root56(Root p0, GameEngine p1, String p2) {
             super();
         }
 
@@ -596,11 +596,11 @@ public class Root extends ScriptContext {
      * Rename from: com.corrodinggames.librocket.scripts.Root#6
      */
     class Root57 implements Runnable {
-        final l33 val$game = null;
+        final GameEngine val$game = null;
 
         final String val$saveName = null;
 
-        Root57(Root p0, l33 p1, String p2) {
+        Root57(Root p0, GameEngine p1, String p2) {
             super();
         }
 
@@ -613,11 +613,11 @@ public class Root extends ScriptContext {
      * Rename from: com.corrodinggames.librocket.scripts.Root#7
      */
     class Root58 implements Runnable {
-        final l33 val$game = null;
+        final GameEngine val$game = null;
 
         final String val$replayName = null;
 
-        Root58(Root p0, l33 p1, String p2) {
+        Root58(Root p0, GameEngine p1, String p2) {
             super();
         }
 
@@ -630,11 +630,11 @@ public class Root extends ScriptContext {
      * Rename from: com.corrodinggames.librocket.scripts.Root#8
      */
     class Root59 implements Runnable {
-        final l33 val$game = null;
+        final GameEngine val$game = null;
 
         final String val$replayName = null;
 
-        Root59(Root p0, l33 p1, String p2) {
+        Root59(Root p0, GameEngine p1, String p2) {
             super();
         }
 

@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.custom;
 
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import java.util.ArrayList;
 
 public class f {
@@ -51,13 +51,13 @@ public class f {
         return false;
     }
 
-    public void a(l p0, ab p1, String p2, String p3) {
+    public void a(l p0, ModIniLoader p1, String p2, String p3) {
     }
 
     public c10 a(String p0, String p1) {
         return null;
     }
 
-    public void a(l p0, ab p1, String p2, String p3, String p4) {
+    public void a(l p0, ModIniLoader p1, String p2, String p3, String p4) {
     }
 }

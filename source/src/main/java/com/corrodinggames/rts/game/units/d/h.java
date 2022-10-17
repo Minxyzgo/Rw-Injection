@@ -6,7 +6,8 @@ import android.graphics.Rect;
 import com.corrodinggames.rts.game.units.a.s;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
-import com.corrodinggames.rts.gameFramework.g.ap;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public abstract strictfp class h extends c implements k {
@@ -23,11 +24,11 @@ public abstract strictfp class h extends c implements k {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(com.corrodinggames.rts.gameFramework.g.k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public j da() {

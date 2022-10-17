@@ -13,10 +13,10 @@ public class a {
         return null;
     }
 
-    public void a(int p0, String p1, String p2, c p3) {
+    public void a(int p0, String p1, String p2, Connection p3) {
     }
 
-    public int a(c p0, int p1) {
+    public int a(Connection p0, int p1) {
         return 0;
     }
 

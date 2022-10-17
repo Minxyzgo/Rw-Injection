@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.a;
 
 import android.graphics.Paint;
 import android.graphics.PointF;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.s;
 import com.corrodinggames.rts.game.units.a4;
 import com.corrodinggames.rts.game.units.af;
@@ -11,12 +11,12 @@ import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.custom.g;
 import com.corrodinggames.rts.game.units.f17;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public final class a extends m {
+public final class a extends Team {
     public static boolean ab;
 
     private static ArrayList bq;
@@ -214,7 +214,7 @@ public final class a extends m {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     public o o(int p0) {
@@ -222,7 +222,7 @@ public final class a extends m {
     }
 
     @Override
-    public void c(k p0) {
+    public void c(GameInputStream p0) {
     }
 
     public o p(int p0) {
@@ -324,7 +324,7 @@ public final class a extends m {
     public void f(float p0) {
     }
 
-    public af e(m p0) {
+    public af e(Team p0) {
         return null;
     }
 
@@ -375,15 +375,15 @@ public final class a extends m {
         return null;
     }
 
-    public static af a(m p0, float p1, float p2, float p3) {
+    public static af a(Team p0, float p1, float p2, float p3) {
         return null;
     }
 
-    public static int a(m p0, float p1, float p2, float p3, boolean p4) {
+    public static int a(Team p0, float p1, float p2, float p3, boolean p4) {
         return 0;
     }
 
-    public static int b(m p0, float p1, float p2, float p3) {
+    public static int b(Team p0, float p1, float p2, float p3) {
         return 0;
     }
 

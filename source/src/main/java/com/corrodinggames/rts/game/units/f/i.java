@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.f;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.r;
 
@@ -11,9 +11,9 @@ public abstract class i extends j {
 
     public abstract int excludeTeam(r p0);
 
-    public abstract m onlyEnemiesOfTeam(r p0);
+    public abstract Team onlyEnemiesOfTeam(r p0);
 
-    public m onlyTeam(r p0) {
+    public Team onlyTeam(r p0) {
         return null;
     }
 

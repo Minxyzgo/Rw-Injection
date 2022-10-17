@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game;
 
-public strictfp class e extends m {
+public strictfp class e extends Team {
     public e(int p0) {
         super();
     }

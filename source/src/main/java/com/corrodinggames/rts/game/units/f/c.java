@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.units.f;
 
 import android.graphics.Rect;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.r;
 import com.corrodinggames.rts.gameFramework.utility.u;
@@ -70,7 +70,7 @@ public final class c {
     public void a(af p0) {
     }
 
-    public void a(b p0) {
+    public void a(MapLoader p0) {
     }
 
     public void b() {

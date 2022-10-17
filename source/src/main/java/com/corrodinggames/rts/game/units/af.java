@@ -6,9 +6,9 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.f;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.s;
 import com.corrodinggames.rts.game.units.custom.ab;
 import com.corrodinggames.rts.game.units.custom.b.i;
@@ -17,10 +17,10 @@ import com.corrodinggames.rts.game.units.custom.d.a11;
 import com.corrodinggames.rts.game.units.custom.d.d;
 import com.corrodinggames.rts.game.units.custom.g;
 import com.corrodinggames.rts.gameFramework.ay;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.o;
 import com.corrodinggames.rts.gameFramework.utility.u;
 import java.util.ArrayList;
@@ -137,7 +137,7 @@ public abstract strictfp class af extends ay {
 
     public long bA;
 
-    public m bB;
+    public Team bB;
 
     public boolean bC;
 
@@ -260,11 +260,11 @@ public abstract strictfp class af extends ay {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public static e a(e p0) {
@@ -440,7 +440,7 @@ public abstract strictfp class af extends ay {
     }
 
     @Override
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 
@@ -452,7 +452,7 @@ public abstract strictfp class af extends ay {
         return false;
     }
 
-    public boolean b(m p0) {
+    public boolean b(Team p0) {
         return false;
     }
 
@@ -517,10 +517,10 @@ public abstract strictfp class af extends ay {
     public final void O(int p0) {
     }
 
-    public void c(m p0) {
+    public void c(Team p0) {
     }
 
-    public void a(m p0) {
+    public void a(Team p0) {
     }
 
     public final void P(int p0) {
@@ -772,7 +772,7 @@ public abstract strictfp class af extends ay {
         return false;
     }
 
-    public void d(m p0) {
+    public void d(Team p0) {
     }
 
     public void cx() {
@@ -845,7 +845,7 @@ public abstract strictfp class af extends ay {
         return false;
     }
 
-    public void e(m p0) {
+    public void e(Team p0) {
     }
 
     public void cF() {
@@ -867,11 +867,11 @@ public abstract strictfp class af extends ay {
         return 0f;
     }
 
-    public Point a(b p0, Point p1) {
+    public Point a(MapLoader p0, Point p1) {
         return null;
     }
 
-    public RectF a(b p0, RectF p1) {
+    public RectF a(MapLoader p0, RectF p1) {
         return null;
     }
 

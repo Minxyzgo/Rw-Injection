@@ -50,7 +50,7 @@ public class af {
         return 0;
     }
 
-    public j i(String p0) {
+    public FileInputStreamPackage i(String p0) {
         return null;
     }
 }

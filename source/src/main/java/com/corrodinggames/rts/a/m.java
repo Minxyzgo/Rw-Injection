@@ -1,5 +1,7 @@
 package com.corrodinggames.rts.a;
 
+import com.corrodinggames.rts.game.Team;
+
 public class m {
     String a;
 
@@ -7,9 +9,9 @@ public class m {
 
     int c;
 
-    com.corrodinggames.rts.game.m d;
+    Team d;
 
-    com.corrodinggames.rts.game.m e;
+    Team e;
 
     int f;
 
@@ -19,7 +21,7 @@ public class m {
         super();
     }
 
-    public void a(com.corrodinggames.rts.game.m p0, int p1) {
+    public void a(Team p0, int p1) {
     }
 
     public boolean a() {

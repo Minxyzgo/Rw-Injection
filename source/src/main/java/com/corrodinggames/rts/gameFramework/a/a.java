@@ -3,7 +3,7 @@ package com.corrodinggames.rts.gameFramework.a;
 import android.content.Context;
 import android.media.SoundPool;
 import com.corrodinggames.rts.gameFramework.utility.ad;
-import com.corrodinggames.rts.gameFramework.utility.j;
+import com.corrodinggames.rts.gameFramework.utility.FileInputStreamPackage;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class a extends h {
@@ -37,7 +37,7 @@ public class a extends h {
     }
 
     @Override
-    public i a(String p0, j p1, boolean p2) {
+    public i a(String p0, FileInputStreamPackage p1, boolean p2) {
         return null;
     }
 }

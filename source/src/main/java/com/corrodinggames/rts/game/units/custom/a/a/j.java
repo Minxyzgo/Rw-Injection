@@ -8,7 +8,7 @@ import com.corrodinggames.rts.game.units.custom.a.c;
 import com.corrodinggames.rts.game.units.custom.i;
 import com.corrodinggames.rts.game.units.custom.k;
 import com.corrodinggames.rts.game.units.custom.l;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public class j extends a7 {
     boolean a;
@@ -25,7 +25,7 @@ public class j extends a7 {
         super();
     }
 
-    public static void a(l p0, ab p1, String p2, String p3, c p4, String p5, boolean p6) {
+    public static void a(l p0, ModIniLoader p1, String p2, String p3, c p4, String p5, boolean p6) {
     }
 
     @Override

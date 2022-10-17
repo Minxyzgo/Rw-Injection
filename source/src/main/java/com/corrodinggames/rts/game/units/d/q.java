@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.d;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.f.i;
 import com.corrodinggames.rts.game.units.r;
@@ -12,7 +12,7 @@ public strictfp class q extends i {
 
     public boolean c;
 
-    m d;
+    Team d;
 
     af e;
 
@@ -32,7 +32,7 @@ public strictfp class q extends i {
     }
 
     @Override
-    public m onlyEnemiesOfTeam(r p0) {
+    public Team onlyEnemiesOfTeam(r p0) {
         return null;
     }
 

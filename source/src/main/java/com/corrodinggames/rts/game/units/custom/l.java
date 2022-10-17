@@ -11,9 +11,10 @@ import com.corrodinggames.rts.game.units.custom.d.d;
 import com.corrodinggames.rts.game.units.custom.logicBooleans.LogicBoolean;
 import com.corrodinggames.rts.game.units.u;
 import com.corrodinggames.rts.gameFramework.f.b;
-import com.corrodinggames.rts.gameFramework.g.ap;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import rwij.annotations.RenameFrom;
@@ -1002,10 +1003,10 @@ public final strictfp class l implements al {
         return null;
     }
 
-    public static void a(ap p0) {
+    public static void a(GameOutputStream p0) {
     }
 
-    public static void a(com.corrodinggames.rts.gameFramework.g.k p0) {
+    public static void a(GameInputStream p0) {
     }
 
     public void b(al p0) {
@@ -1022,11 +1023,11 @@ public final strictfp class l implements al {
         return null;
     }
 
-    public e a(ab p0, String p1, String p2) {
+    public e a(ModIniLoader p0, String p1, String p2) {
         return null;
     }
 
-    public e a(ab p0, String p1, String p2, boolean p3) {
+    public e a(ModIniLoader p0, String p1, String p2, boolean p3) {
         return null;
     }
 

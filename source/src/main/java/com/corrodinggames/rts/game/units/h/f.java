@@ -2,8 +2,8 @@ package com.corrodinggames.rts.game.units.h;
 
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.p;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 
 public abstract strictfp class f extends p {
@@ -22,11 +22,11 @@ public abstract strictfp class f extends p {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game;
 
-public class s extends m {
+public class s extends Team {
     public s(int p0) {
         super();
     }

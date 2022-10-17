@@ -2,8 +2,8 @@ package com.corrodinggames.rts.gameFramework;
 
 import android.graphics.PointF;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public class aa extends bi {
@@ -19,10 +19,10 @@ public class aa extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public void a(float p0) {

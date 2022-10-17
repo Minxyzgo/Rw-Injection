@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.h;
 
 import android.graphics.Paint;
-import com.corrodinggames.rts.game.b.b;
+import com.corrodinggames.rts.game.map.MapLoader;
 import com.corrodinggames.rts.game.units.ah;
 import java.util.LinkedList;
 
@@ -84,7 +84,7 @@ public final strictfp class k implements Runnable {
     public void c() {
     }
 
-    public void a(b p0) {
+    public void a(MapLoader p0) {
     }
 
     public void d() {

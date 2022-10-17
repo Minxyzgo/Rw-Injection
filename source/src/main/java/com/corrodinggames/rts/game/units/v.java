@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.f.i;
 
 public strictfp class v extends i {
@@ -32,12 +32,12 @@ public strictfp class v extends i {
     }
 
     @Override
-    public m onlyEnemiesOfTeam(r p0) {
+    public Team onlyEnemiesOfTeam(r p0) {
         return null;
     }
 
     @Override
-    public m onlyTeam(r p0) {
+    public Team onlyTeam(r p0) {
         return null;
     }
 

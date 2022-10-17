@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units.custom.logicBooleans;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.ao;
@@ -846,7 +846,7 @@ public abstract class LogicBoolean implements Cloneable {
         }
 
         public static class HandleCallbackCountAlly extends i {
-            public m ally;
+            public Team ally;
 
             public h tag;
 
@@ -870,12 +870,12 @@ public abstract class LogicBoolean implements Cloneable {
             }
 
             @Override
-            public m onlyEnemiesOfTeam(r p0) {
+            public Team onlyEnemiesOfTeam(r p0) {
                 return null;
             }
 
             @Override
-            public m onlyTeam(r p0) {
+            public Team onlyTeam(r p0) {
                 return null;
             }
 
@@ -907,12 +907,12 @@ public abstract class LogicBoolean implements Cloneable {
             }
 
             @Override
-            public m onlyEnemiesOfTeam(r p0) {
+            public Team onlyEnemiesOfTeam(r p0) {
                 return null;
             }
 
             @Override
-            public m onlyTeam(r p0) {
+            public Team onlyTeam(r p0) {
                 return null;
             }
 
@@ -983,7 +983,7 @@ public abstract class LogicBoolean implements Cloneable {
 
             public boolean incompleteBuildings;
 
-            public m targetTeam;
+            public Team targetTeam;
 
             public HandleCallbackCount() {
                 super();
@@ -999,12 +999,12 @@ public abstract class LogicBoolean implements Cloneable {
             }
 
             @Override
-            public m onlyEnemiesOfTeam(r p0) {
+            public Team onlyEnemiesOfTeam(r p0) {
                 return null;
             }
 
             @Override
-            public m onlyTeam(r p0) {
+            public Team onlyTeam(r p0) {
                 return null;
             }
 

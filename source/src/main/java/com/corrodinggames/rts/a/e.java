@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.os.Handler;
 import android.view.Menu;
 import android.widget.EditText;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 
 public class e extends b {
     final Handler b = null;
@@ -171,11 +171,11 @@ public class e extends b {
     static class e68 implements DialogInterface.OnClickListener {
         final EditText a = null;
 
-        final l33 b = null;
+        final GameEngine b = null;
 
         final e c = null;
 
-        e68(e p0, EditText p1, l33 p2) {
+        e68(e p0, EditText p1, GameEngine p2) {
             super();
         }
 

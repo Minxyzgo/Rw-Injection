@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.game.units.a;
 
 import android.graphics.Rect;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.r;
@@ -182,7 +182,7 @@ public class g extends s {
     }
 
     @Override
-    public boolean a(af p0, m p1) {
+    public boolean a(af p0, Team p1) {
         return false;
     }
 

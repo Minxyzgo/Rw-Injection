@@ -7,7 +7,8 @@ import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.custom.g;
 import com.corrodinggames.rts.game.units.f.f;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
 import com.corrodinggames.rts.gameFramework.utility.m;
 import com.corrodinggames.rts.gameFramework.utility.u;
 import java.util.ArrayList;
@@ -102,11 +103,11 @@ public class i extends o {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(com.corrodinggames.rts.gameFramework.g.k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public PointF a() {

@@ -16,13 +16,13 @@ final strictfp class e implements Runnable {
 
     w e;
 
-    final c f = null;
+    final Connection f = null;
 
-    e(c p0) {
+    e(Connection p0) {
         super();
     }
 
-    public void a(ar p0) {
+    public void a(PacketData p0) {
     }
 
     public void a() {

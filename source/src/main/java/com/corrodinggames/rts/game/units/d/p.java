@@ -8,8 +8,8 @@ import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.an;
 import com.corrodinggames.rts.game.units.d15;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 import java.util.ArrayList;
 
@@ -39,11 +39,11 @@ public strictfp class p extends c implements d15 {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public ak L() {

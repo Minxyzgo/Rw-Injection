@@ -28,7 +28,7 @@ public class ae {
         return 0;
     }
 
-    public static j b(String p0, boolean p1) {
+    public static FileInputStreamPackage b(String p0, boolean p1) {
         return null;
     }
 

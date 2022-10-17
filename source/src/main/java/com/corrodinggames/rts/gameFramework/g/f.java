@@ -2,7 +2,7 @@ package com.corrodinggames.rts.gameFramework.g;
 
 import com.corrodinggames.rts.game.units.af;
 
-public class f extends ap {
+public class f extends GameOutputStream {
     public String a;
 
     public f() {

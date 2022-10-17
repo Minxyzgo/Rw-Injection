@@ -1,15 +1,15 @@
 package com.corrodinggames.rts.gameFramework;
 
 import android.graphics.PointF;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.c;
 import com.corrodinggames.rts.game.units.a4;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.an;
 import com.corrodinggames.rts.game.units.r;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import java.util.AbstractList;
 
 public strictfp class e25 {
@@ -29,7 +29,7 @@ public strictfp class e25 {
 
     public boolean h;
 
-    public m i;
+    public Team i;
 
     public an j;
 
@@ -45,7 +45,7 @@ public strictfp class e25 {
 
     public boolean o;
 
-    public m p;
+    public Team p;
 
     public short q;
 
@@ -78,7 +78,7 @@ public strictfp class e25 {
     public void b() {
     }
 
-    public m c() {
+    public Team c() {
         return null;
     }
 
@@ -97,10 +97,10 @@ public strictfp class e25 {
     public void g() {
     }
 
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public void a(AbstractList p0) {
@@ -169,7 +169,7 @@ public strictfp class e25 {
     public void k() {
     }
 
-    public boolean a(m p0, m p1) {
+    public boolean a(Team p0, Team p1) {
         return false;
     }
 

@@ -1,5 +1,6 @@
 package com.corrodinggames.rts.game.units.custom.a.a;
 
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.p;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.f.i;
@@ -31,12 +32,12 @@ public class l extends i {
     }
 
     @Override
-    public com.corrodinggames.rts.game.m onlyEnemiesOfTeam(r p0) {
+    public Team onlyEnemiesOfTeam(r p0) {
         return null;
     }
 
     @Override
-    public com.corrodinggames.rts.game.m onlyTeam(r p0) {
+    public Team onlyTeam(r p0) {
         return null;
     }
 

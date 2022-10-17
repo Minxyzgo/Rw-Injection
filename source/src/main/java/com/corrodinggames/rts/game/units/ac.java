@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.game.units;
 
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.f.i;
 
 public class ac extends i {
@@ -20,7 +20,7 @@ public class ac extends i {
     }
 
     @Override
-    public m onlyEnemiesOfTeam(r p0) {
+    public Team onlyEnemiesOfTeam(r p0) {
         return null;
     }
 

@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.units.custom.d;
 
 import com.corrodinggames.rts.game.units.custom.ag;
 import com.corrodinggames.rts.game.units.custom.l;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public strictfp class b {
     public String a;
@@ -37,7 +37,7 @@ public strictfp class b {
         super();
     }
 
-    public void a(l p0, ab p1, String p2, String p3) {
+    public void a(l p0, ModIniLoader p1, String p2, String p3) {
     }
 
     public void a(l p0) {

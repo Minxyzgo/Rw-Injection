@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.gameFramework.f;
 
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import java.util.ArrayList;
 
 public class b {
@@ -119,7 +119,7 @@ public class b {
     public void l() {
     }
 
-    public ab m() {
+    public ModIniLoader m() {
         return null;
     }
 

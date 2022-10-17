@@ -6,11 +6,11 @@ import android.graphics.RectF;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.custom.i;
 import com.corrodinggames.rts.gameFramework.az;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.j.q;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.m;
 import com.corrodinggames.rts.gameFramework.utility.u;
 import com.corrodinggames.rts.gameFramework.w;
@@ -271,11 +271,11 @@ public strictfp class f extends az {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     public static void c() {
@@ -316,7 +316,7 @@ public strictfp class f extends az {
     }
 
     @Override
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 

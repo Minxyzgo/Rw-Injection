@@ -8,7 +8,7 @@ import com.corrodinggames.rts.game.units.custom.a.c;
 import com.corrodinggames.rts.game.units.custom.g;
 import com.corrodinggames.rts.game.units.custom.i;
 import com.corrodinggames.rts.game.units.custom.s;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
 public class k extends a7 {
@@ -48,8 +48,8 @@ public class k extends a7 {
         super();
     }
 
-    public static void a(com.corrodinggames.rts.game.units.custom.l p0, ab p1, String p2, String p3,
-            c p4, String p5, boolean p6) {
+    public static void a(com.corrodinggames.rts.game.units.custom.l p0, ModIniLoader p1, String p2, String p3,
+                         c p4, String p5, boolean p6) {
     }
 
     @Override

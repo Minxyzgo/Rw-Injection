@@ -11,7 +11,7 @@ public strictfp class am implements Runnable {
 
     public final boolean a = false;
 
-    private final ad r = null;
+    private final Network r = null;
 
     volatile boolean c;
 
@@ -43,7 +43,7 @@ public strictfp class am implements Runnable {
 
     boolean q;
 
-    am(ad p0) {
+    am(Network p0) {
         super();
     }
 

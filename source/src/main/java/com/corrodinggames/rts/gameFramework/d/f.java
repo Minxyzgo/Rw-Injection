@@ -5,7 +5,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
-import com.corrodinggames.rts.game.m;
+import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.d;
 import com.corrodinggames.rts.game.units.a.e;
 import com.corrodinggames.rts.game.units.a.j;
@@ -19,9 +19,9 @@ import com.corrodinggames.rts.gameFramework.bi;
 import com.corrodinggames.rts.gameFramework.d.a.c;
 import com.corrodinggames.rts.gameFramework.e25;
 import com.corrodinggames.rts.gameFramework.f.b;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import com.corrodinggames.rts.gameFramework.utility.u;
 import java.util.ArrayList;
 
@@ -369,15 +369,15 @@ public final class f extends bi {
     public void a(h19 p0) {
     }
 
-    public boolean a(l33 p0) {
+    public boolean a(GameEngine p0) {
         return false;
     }
 
-    public boolean b(l33 p0) {
+    public boolean b(GameEngine p0) {
         return false;
     }
 
-    public boolean c(l33 p0) {
+    public boolean c(GameEngine p0) {
         return false;
     }
 
@@ -387,10 +387,10 @@ public final class f extends bi {
     public void j() {
     }
 
-    public void a(l33 p0, m p1, boolean p2, boolean p3) {
+    public void a(GameEngine p0, Team p1, boolean p2, boolean p3) {
     }
 
-    public void a(l33 p0, m p1, boolean p2, com.corrodinggames.rts.game.units.custom.d.d p3) {
+    public void a(GameEngine p0, Team p1, boolean p2, com.corrodinggames.rts.game.units.custom.d.d p3) {
     }
 
     public boolean b(boolean p0) {
@@ -448,7 +448,7 @@ public final class f extends bi {
     void a(e25 p0) {
     }
 
-    public m q() {
+    public Team q() {
         return null;
     }
 
@@ -525,7 +525,7 @@ public final class f extends bi {
     public void a(float p0, float p1, Point p2, j p3) {
     }
 
-    public void a(float p0, float p1, m p2, j p3) {
+    public void a(float p0, float p1, Team p2, j p3) {
     }
 
     public e25 u() {
@@ -635,10 +635,10 @@ public final class f extends bi {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
-    public void a(k p0, boolean p1) {
+    public void a(GameInputStream p0, boolean p1) {
     }
 
     public void a(com.corrodinggames.rts.game.units.r p0, float p1, float p2, float p3, float p4,

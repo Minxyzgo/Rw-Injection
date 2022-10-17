@@ -1,6 +1,6 @@
 package com.corrodinggames.rts.gameFramework.c;
 
-import com.corrodinggames.rts.gameFramework.utility.j;
+import com.corrodinggames.rts.gameFramework.utility.FileInputStreamPackage;
 
 public class a {
     public static b a;
@@ -40,11 +40,11 @@ public class a {
         return false;
     }
 
-    public static j g(String p0) {
+    public static FileInputStreamPackage g(String p0) {
         return null;
     }
 
-    public static j h(String p0) {
+    public static FileInputStreamPackage h(String p0) {
         return null;
     }
 

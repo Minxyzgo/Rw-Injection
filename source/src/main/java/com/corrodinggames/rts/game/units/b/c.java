@@ -9,8 +9,8 @@ import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.ah;
 import com.corrodinggames.rts.game.units.ak;
 import com.corrodinggames.rts.game.units.al;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 import java.util.ArrayList;
 
@@ -60,11 +60,11 @@ public strictfp class c extends b {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     @Override

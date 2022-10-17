@@ -11,10 +11,10 @@ import com.corrodinggames.rts.game.units.a.x;
 import com.corrodinggames.rts.game.units.e.j;
 import com.corrodinggames.rts.gameFramework.d.a.c;
 import com.corrodinggames.rts.gameFramework.d.a.i;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
-import com.corrodinggames.rts.gameFramework.l33;
+import com.corrodinggames.rts.gameFramework.GameEngine;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -314,11 +314,11 @@ public strictfp class h19 extends j implements d15 {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 
     @Override
@@ -904,13 +904,13 @@ public strictfp class h19 extends j implements d15 {
         static class h19190288 extends i {
             final com.corrodinggames.rts.gameFramework.d.a.e a = null;
 
-            final l33 b = null;
+            final GameEngine b = null;
 
             final Runnable c = null;
 
             final h19190 d = null;
 
-            h19190288(h19190 p0, com.corrodinggames.rts.gameFramework.d.a.e p1, l33 p2,
+            h19190288(h19190 p0, com.corrodinggames.rts.gameFramework.d.a.e p1, GameEngine p2,
                     Runnable p3) {
                 super();
             }

@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework;
 
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 
 public abstract strictfp class az extends w {
     public int dQ;
@@ -11,10 +11,10 @@ public abstract strictfp class az extends w {
     }
 
     @Override
-    public void a(ap p0) {
+    public void a(GameOutputStream p0) {
     }
 
     @Override
-    public void a(k p0) {
+    public void a(GameInputStream p0) {
     }
 }

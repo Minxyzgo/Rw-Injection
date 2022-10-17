@@ -11,7 +11,7 @@ import com.corrodinggames.rts.game.units.custom.k;
 import com.corrodinggames.rts.game.units.custom.l;
 import com.corrodinggames.rts.game.units.custom.s;
 import com.corrodinggames.rts.game.units.custom.t;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 
 public class b extends a7 {
     public static an u;
@@ -62,8 +62,8 @@ public class b extends a7 {
         super();
     }
 
-    public static void a(l p0, ab p1, String p2, String p3,
-            com.corrodinggames.rts.game.units.custom.a.c p4, String p5, boolean p6) {
+    public static void a(l p0, ModIniLoader p1, String p2, String p3,
+                         com.corrodinggames.rts.game.units.custom.a.c p4, String p5, boolean p6) {
     }
 
     public an a(k p0, float p1, float p2, af p3, int p4) {

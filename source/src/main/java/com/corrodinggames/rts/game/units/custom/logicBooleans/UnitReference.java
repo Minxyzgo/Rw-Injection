@@ -5,7 +5,7 @@ import com.corrodinggames.rts.game.units.al;
 import com.corrodinggames.rts.game.units.custom.k;
 import com.corrodinggames.rts.game.units.custom.l;
 import com.corrodinggames.rts.game.units.custom.t;
-import com.corrodinggames.rts.gameFramework.utility.ab;
+import com.corrodinggames.rts.gameFramework.utility.ModIniLoader;
 import java.util.HashMap;
 
 public abstract class UnitReference implements Cloneable {
@@ -39,8 +39,8 @@ public abstract class UnitReference implements Cloneable {
     static void addUnitReferenceType(UnitReference p0, String[] p1) {
     }
 
-    public static UnitReferenceOrUnitType parseUnitTypeOrReferenceFromConf(l p0, ab p1, String p2,
-            String p3, UnitReferenceOrUnitType p4) {
+    public static UnitReferenceOrUnitType parseUnitTypeOrReferenceFromConf(l p0, ModIniLoader p1, String p2,
+                                                                           String p3, UnitReferenceOrUnitType p4) {
         return null;
     }
 
@@ -49,8 +49,8 @@ public abstract class UnitReference implements Cloneable {
         return null;
     }
 
-    public static UnitReference parseUnitReferenceFromConf(l p0, ab p1, String p2, String p3,
-            UnitReference p4) {
+    public static UnitReference parseUnitReferenceFromConf(l p0, ModIniLoader p1, String p2, String p3,
+                                                           UnitReference p4) {
         return null;
     }
 

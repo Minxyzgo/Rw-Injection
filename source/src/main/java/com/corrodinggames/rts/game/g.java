@@ -5,8 +5,8 @@ import com.corrodinggames.rts.game.units.custom.an;
 import com.corrodinggames.rts.game.units.custom.au;
 import com.corrodinggames.rts.game.units.custom.i;
 import com.corrodinggames.rts.game.units.custom.x;
-import com.corrodinggames.rts.gameFramework.g.ap;
-import com.corrodinggames.rts.gameFramework.g.k;
+import com.corrodinggames.rts.gameFramework.g.GameOutputStream;
+import com.corrodinggames.rts.gameFramework.g.GameInputStream;
 import com.corrodinggames.rts.gameFramework.j.e;
 import com.corrodinggames.rts.gameFramework.utility.m;
 
@@ -241,10 +241,10 @@ public class g {
         return 0f;
     }
 
-    public static void a(g p0, ap p1) {
+    public static void a(g p0, GameOutputStream p1) {
     }
 
-    public static g a(k p0) {
+    public static g a(GameInputStream p0) {
         return null;
     }
 }
