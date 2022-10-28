@@ -1,7 +1,7 @@
 package com.corrodinggames.rts.gameFramework.h;
 
 import android.graphics.Paint;
-import com.corrodinggames.rts.game.map.MapLoader;
+import com.corrodinggames.rts.game.b.MapLoader;
 import com.corrodinggames.rts.game.units.ah;
 import java.util.LinkedList;
 

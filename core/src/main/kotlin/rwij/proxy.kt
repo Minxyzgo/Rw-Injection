@@ -4,24 +4,24 @@ import javassist.*
 import javassist.bytecode.AnnotationsAttribute
 import javassist.util.proxy.MethodHandler
 import rwij.annotations.Proxy
-import rwij.util.NodeTree
+import rwij.util.ClassTree
+import rwij.util.property
 import java.io.File
 import java.lang.reflect.Method
 import java.net.URL
 import java.net.URLClassLoader
+import java.util.Properties
 import kotlin.jvm.functions.FunctionN
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
-import kotlin.reflect.full.extensionReceiverParameter
 import kotlin.reflect.full.instanceParameter
-import kotlin.reflect.full.valueParameters
 import kotlin.reflect.jvm.jvmErasure
 
 /**
  * @param source must be [KFunction].
  */
 @Suppress("UNCHECKED_CAST")
-fun <K, T : Function<K>> Any.setFunction(source: T, target: T) {
+fun <T : Function<*>> Any.setFunction(source: T, target: T) {
     if(this::class.java.getAnnotation(Proxy::class.java) == null) {
         throw IllegalAccessException("unsupported proxy object")
     }
@@ -37,7 +37,7 @@ fun <K : Any> KClass<K>.setFunction(caller: FunctionAgent<K>.() -> Unit) {
         throw IllegalAccessException("unsupported proxy object")
     }
 
-    ProxyFactory.addAgent(this.java, FunctionAgent<K>(this).apply(caller))
+    ProxyFactory.addAgent(this.java, FunctionAgent(this).apply(caller))
 }
 
 private fun KClass<*>.getMethodByKFunction(source: KFunction<*>): Method {
@@ -48,8 +48,7 @@ private fun KClass<*>.getMethodByKFunction(source: KFunction<*>): Method {
 
 @Suppress("unused")
 object ProxyFactory {
-    val pool: ClassPool
-    val classTree: NodeTree
+    val proxyVersion = "0.0.1"
 
     @JvmField
     @Suppress("UNCHECKED_CAST")
@@ -78,35 +77,72 @@ object ProxyFactory {
     private var isLoaded = false
     private val agentMap = mutableMapOf<Class<*>, FunctionAgent<*>>()
 
-    init {
-        val (cp, tree) = Builder.buildNewClassTree("game-lib.jar")
-        pool = cp
-        classTree = tree
+    /**
+     * 提供简便的初始化模块。在[block]内调用[setProxy]执行复杂的加载操作
+     */
+    fun runInit(block: ProxyFactory.() -> Unit) {
+        Builder.loadLib()
+        block(this)
+        load()
     }
 
-    fun setProxy(name: String) {
-        if(isLoaded) throw RuntimeException()
+    /**
+     * 设置代理，根据给定的[tree]和要修改的类全称限定列表[proxyList]
+     * @param tree 要更改的jar tree，通常使用[Builder.getClassTreeByLibName]获取
+     */
+    fun setProxy(tree: ClassTree, vararg proxyList: String) {
+        val currentListStr = proxyList.joinToString(",")
 
-        val i = classTree.indexOfFirst { (it.value as String) == name }
-        if(i != -1) {
-            val clazz = pool[name]
-            if(!clazz.fields.any { it.name == "__proxy_map__" }) {
-                clazz.addField(CtField.make("""
-                public java.util.HashMap __proxy_map__ = null;
-            """.trimIndent(), clazz))
+        val fi = File("${Builder.libDir}/info.properties").apply {
+            if(!exists()) createNewFile()
+        }
+        val info = Properties().apply {
+            load(fi.inputStream())
+        }
+
+        val version by info.property(proxyVersion, true)
+        if(version != proxyVersion) {
+            proxyList.forEach {
+                setProxy0(tree.defPool[it])
             }
+            return
+        }
 
-            clazz.methods.filter {
-                it.methodInfo2.codeAttribute != null && !it.hasAnnotation(Proxy::class.java)
-            }.forEach {
-                val proceed = CtNewMethod.copy(it, "__proxy__${it.name}", clazz, null)
-                clazz.addMethod(proceed)
-                val r = "\$r"
-                val sig = "\$sig"
-                val args = "\$args"
-                val clazz0 = "\$class"
-                it.setBody(
+        val propertyName = tree.name + "_proxy_list"
+        val proxyList0 = info.getProperty(propertyName, "")
+        info.setProperty(propertyName, currentListStr)
+        info.setProperty("last_mod_time", System.currentTimeMillis().toString())
+
+        val subtract = proxyList.toMutableList().apply{ removeAll(proxyList0.split(",")) }
+        subtract.forEach { setProxy0(tree.defPool[it]) }
+
+        println(subtract)
+
+        info.store(fi.outputStream(), "")
+    }
+
+    private fun setProxy0(clazz: CtClass) {
+        if(!clazz.fields.any { it.name == "__proxy_map__" }) {
+            clazz.addField(
+                CtField.make(
                     """
+                        public java.util.HashMap __proxy_map__ = null;
+                    """.trimIndent(), clazz
+                )
+            )
+        }
+
+        clazz.methods.filter {
+            it.methodInfo2.codeAttribute != null && !it.hasAnnotation(Proxy::class.java)
+        }.forEach {
+            val proceed = CtNewMethod.copy(it, "__proxy__${it.name}", clazz, null)
+            clazz.addMethod(proceed)
+            val r = "\$r"
+            val sig = "\$sig"
+            val args = "\$args"
+            val clazz0 = "\$class"
+            it.setBody(
+                """
                     {
                         java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${it.name}", $sig);
                         m1.setAccessible(true);
@@ -116,32 +152,31 @@ object ProxyFactory {
                             ${if(!Modifier.isStatic(it.modifiers)) "this" else "null"}, m1, m2, $args);
                     }
                 """.trimIndent()
-                )
-
-                val constPool = clazz.classFile2.constPool
-                val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
-                val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
-                annotationsAttribute.addAnnotation(proxyAnnotation)
-                clazz.classFile.addAttribute(annotationsAttribute)
-            }
-        } else {
-            throw RuntimeException()
+            )
         }
+
+        val constPool = clazz.classFile2.constPool
+        val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
+        val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
+        annotationsAttribute.addAnnotation(proxyAnnotation)
+        clazz.classFile.addAttribute(annotationsAttribute)
     }
 
     fun load() {
         if(isLoaded) throw RuntimeException()
 
         isLoaded = true
-        val tempFile = File.createTempFile("proxy-temp", ".jar").apply {
-            deleteOnExit()
-        }
-        Builder.buildJar(tempFile, classTree, pool)
+        Builder.saveLib()
+
         val addURL: Method = URLClassLoader::class.java.getDeclaredMethod("addURL", URL::class.java).apply {
             isAccessible = true
         }
 
-        addURL.invoke(ClassLoader.getSystemClassLoader(), tempFile.toURI().toURL())
+        val allLibFiles = Builder.libraries.keys.map { File("${Builder.libDir}/$it.jar") }
+
+        allLibFiles.forEach {
+            addURL.invoke(ClassLoader.getSystemClassLoader(), it.toURI().toURL())
+        }
     }
 
     fun <T : Any> addAgent(clazz: Class<T>, agent: FunctionAgent<T>) {
@@ -155,7 +190,7 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
     /**
     * @param source must be [KFunction].
     */
-    fun <K, T : Function<K>> addProxy(source: T, target: T) {
+    fun <T : Function<*>> addProxy(source: T, target: T) {
         proxyMap[tClass.getMethodByKFunction(source as KFunction<*>)] = target
     }
 }

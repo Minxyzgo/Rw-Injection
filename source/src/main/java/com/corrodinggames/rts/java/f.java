@@ -15,9 +15,9 @@ class f {
 
     String[] f;
 
-    final e g = null;
+    final GraphicsProcessor g = null;
 
-    f(e p0) {
+    f(GraphicsProcessor p0) {
         super();
     }
 

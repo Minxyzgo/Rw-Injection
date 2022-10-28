@@ -4,15 +4,17 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.Game;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import rwij.annotations.RenameFrom;
 
-public class b35 extends AppGameContainer {
+@RenameFrom(oldName = "b35")
+public class GameScene extends AppGameContainer {
     boolean a;
 
     Object b;
 
     c36 c;
 
-    public b35(Game p0, int p1, int p2, boolean p3) throws SlickException {
+    public GameScene(Game p0, int p1, int p2, boolean p3) throws SlickException {
         super(null);
     }
 

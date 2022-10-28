@@ -1,4 +1,4 @@
-package com.corrodinggames.rts.game.map;
+package com.corrodinggames.rts.game.b;
 
 import android.graphics.Rect;
 import com.corrodinggames.rts.gameFramework.j.e;

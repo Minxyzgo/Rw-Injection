@@ -25,13 +25,16 @@ plugins {
     kotlin("kapt") version "1.7.0"
     java
 }
-
 group = "com.github.minxyzgo"
-version = "1.2"
+version = "1.3"
 
 sourceSets.main.configure {
     java {
         exclude("**/META-INF/**")
+    }
+
+    resources {
+        srcDirs("$rootDir/lib")
     }
 }
 
@@ -56,12 +59,17 @@ fun Project.addDependencies() {
     dependencies {
         api("org.javassist:javassist:3.29.2-GA")
         implementation("com.squareup:javapoet:1.13.0")
-        runtimeOnly(fileTree("dir" to "$rootDir/lib", "exclude" to "xxx.jar", "include" to "*.jar"))
         implementation(kotlin("reflect"))
 
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testCompileOnly(project(":source"))
+    }
+
+    sourceSets.main.configure {
+        resources {
+            srcDirs(rootProject.sourceSets.main.get().resources)
+        }
     }
 }
 

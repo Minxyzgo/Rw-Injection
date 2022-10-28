@@ -21,8 +21,10 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.opengl.ImageData;
 import org.newdawn.slick.opengl.renderer.LineStripRenderer;
 import org.newdawn.slick.opengl.renderer.SGL;
+import rwij.annotations.RenameFrom;
 
-public final class e implements l {
+@RenameFrom(oldName = "e")
+public final class GraphicsProcessor implements l {
     public static final Color b = null;
 
     public static final Color c = null;
@@ -101,7 +103,7 @@ public final class e implements l {
 
     float K;
 
-    public e() {
+    public GraphicsProcessor() {
         super();
     }
 

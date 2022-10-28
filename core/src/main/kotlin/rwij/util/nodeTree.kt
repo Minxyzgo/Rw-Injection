@@ -1,5 +1,6 @@
 package rwij.util
 
+
 open class NodeTree(protected val children: MutableList<Node> = mutableListOf()) : MutableCollection<Node> by children {
     open fun addChild(value: Any): Node {
         val node = Node(value, this)
@@ -20,3 +21,4 @@ class Node(
         return node
     }
 }
+

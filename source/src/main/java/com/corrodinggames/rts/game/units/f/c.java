@@ -2,7 +2,7 @@ package com.corrodinggames.rts.game.units.f;
 
 import android.graphics.Rect;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.map.MapLoader;
+import com.corrodinggames.rts.game.b.MapLoader;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.r;
 import com.corrodinggames.rts.gameFramework.utility.u;

@@ -5,10 +5,11 @@
 
 ## TODO
 * [ ] 支持编译source内的 Overwrite 的代码
-* [ ] 通过修改bytecode的方式直接修改引用
 * [ ] 支持自动设置代理 & hot-load
-* [ ] 支持缓存
+* [x] 支持缓存
+* [ ] 使用asm或kcp代替重命名的解决方案
 * [ ] gradle-插件
+* [ ] headless-simulation 子项目
 
 ## 如何使用？
 
@@ -29,7 +30,10 @@ dependencies {
 ```java
 //class 定义
 public class Example {
+    @RenameFrom(oldName = "a")
     Object field = null;
+    
+    int c = 0;
     //...
 }
 ```
@@ -40,17 +44,19 @@ xx.get { ::field } // 获取
 xx.set(xx::field, null) // 设置
 
 //并请注意，如果一个field它没有被Rename映射过，那么它不能采取上述方式，只能采取传统方式:
-xx.field //get
-xx.field = null
+xx.c //get
+xx.c = 1
 
 //换言之， 如果一个field被Rename映射，就只能采取第一种方式，反之则必须采取第二种
 ```
 
 如果你需要代理一个Rw class的函数， 那么采取以下代码: 
 ```kotlin
-ProxyFactory.setProxy("a.a.b") // canonical name of the class you want to be proxied
-ProxyFactory.setProxy("a.a.c") //你可以同时添加更多要被代理的类
-ProxyFactory.load() //调用这个方法，意味着加载代理类，你将再也不能使用setProxy, 因此它应执行在任何rw类加载之前。
+ProxyFactory.runInit {
+    setProxy("a.a.b", Builder.getClassTreeByLibName("game-lib")) 
+    setProxy("ibxm.Channel", "ibxm.IBXM", Builder.getClassTreeByLibName("ibxm")) //你可以同时从其它lib中添加更多要被代理的类
+}
+//注意，runInit应当在程序生命周期中只调用一次
 ```
 在调用`ProxyFactory.load()`后，对于以下定义的java class:
 ```java
@@ -59,7 +65,7 @@ public class Example {
         System.out.println(12345);
     }
     
-    Object sample2(int v) {
+    void sample2(int v) {
         //...
     }
 }
@@ -67,19 +73,25 @@ public class Example {
 可以: 
 ```kotlin
 val e = Example()
-e.sample1() // 打印 12345
+e.sample1() // 12345
 Example::class.setFunction {
     addProxy(Example::sample1) { // 自动推断为 （Example) -> Unit. 因此可以用idea自动补全
         println(123)
     }
+
+    addProxy(Example::sample2) { self, i -> // 自动推断为 （Example, Int) -> Unit. 因此可以用idea自动补全
+        println(i)
+    }
 }
 
-e.sample1() // 打印 123
+e.sample1() // 123
+
+e.sample2(234) // 234
 
 e.setFunction(e::sample1) {
     println(234)
 }
-e.sample1() // 打印 234
+e.sample1() // 234
 ```
 因此，代理优先级为 对象代理 > 类代理 > 原始函数
 
@@ -116,7 +128,7 @@ public class Parser {
 }
 ```
 请注意，若接下来需要继续修改映射名，保留`RenameFrom`且无需再次更改`oldName`.例如：将`Parser`转化为`TreeParser`,只需直接更改class name
-而无需更改`RenameFrom`的`oldName`，它应该保留为`@RenameFrom(oldName = "c")`
+而无需更改`RenameFrom`的`oldName`，它应该保留为`@RenameFrom(oldName = "a")`
 
 此外如果你同样确切的了解一个反编译方法的代码的实现，你也可以将其添加进映射的方法体。现在它是无用的，仅是为了阅读，但以后可能会对其编译。
 

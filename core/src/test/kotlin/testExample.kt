@@ -1,8 +1,5 @@
 import org.junit.jupiter.api.Test
-import rwij.ProxyFactory
-import rwij.get
-import rwij.set
-import rwij.setFunction
+import rwij.*
 
 class ProxyTest {
 
@@ -23,9 +20,15 @@ class ProxyTest {
 
     @Test
     fun testProxyFunction() {
-        ProxyFactory.setProxy("a.a.b")
-        ProxyFactory.load()
-        var i = 0
+        Builder.libDir = "testLib"
+
+        val tree = Builder.getClassTreeByLibName("game-lib")
+
+        ProxyFactory.runInit {
+            setProxy(tree, "a.a.b")
+        }
+
+        val i = 0
         val bc = a.a.b()
 
         a.a.b::class.setFunction {

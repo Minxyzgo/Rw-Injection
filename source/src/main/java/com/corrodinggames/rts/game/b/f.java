@@ -1,4 +1,4 @@
-package com.corrodinggames.rts.game.map;
+package com.corrodinggames.rts.game.b;
 
 public class f extends Exception {
     public f(String p0) {

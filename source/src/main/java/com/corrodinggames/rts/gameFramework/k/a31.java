@@ -2,8 +2,8 @@ package com.corrodinggames.rts.gameFramework.k;
 
 import android.graphics.Paint;
 import com.corrodinggames.rts.game.Team;
-import com.corrodinggames.rts.game.map.a;
-import com.corrodinggames.rts.game.map.f;
+import com.corrodinggames.rts.game.b.a;
+import com.corrodinggames.rts.game.b.f;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.custom.ag;
 import com.corrodinggames.rts.game.units.custom.au;

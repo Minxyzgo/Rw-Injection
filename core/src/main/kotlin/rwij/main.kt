@@ -4,7 +4,6 @@ import java.io.File
 
 //上一次的修改时间，用于代码的增量更新
 var latestModTime = 0L
-val jarFile = File("source\\build\\libs\\game-lib-output.jar")
 
 fun main(args: Array<String>) {
     val param = args.first()
@@ -17,10 +16,15 @@ fun main(args: Array<String>) {
                 timeTempFile.createNewFile()
                 0
             }
-            Builder.build(sourceFile, modTime)
+            CodeBuilder.build(sourceFile, modTime)
             timeTempFile.writeText(latestModTime.toString())
-            Builder.buildJar(File("annotations\\src\\main\\resources\\game-lib-output.jar"), Builder.tree, Builder.pool)
+            //CodeBuilder.buildJar(File("annotations\\src\\main\\resources\\game-lib-output.jar"), CodeBuilder.tree, CodeBuilder.pool)
         }
+
+//        "buildJar" -> {
+//            val (cp, tree) = CodeBuilder.buildNewClassTree()
+//            CodeBuilder.buildJar(File("annotations\\src\\main\\resources\\game-lib-output.jar"), tree, cp)
+//        }
         else -> throw IllegalArgumentException("unknown param: $param")
     }
 }

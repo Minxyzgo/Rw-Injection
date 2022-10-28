@@ -1,4 +1,4 @@
-package com.corrodinggames.rts.game.map;
+package com.corrodinggames.rts.game.b;
 
 import com.corrodinggames.rts.gameFramework.j.e;
 

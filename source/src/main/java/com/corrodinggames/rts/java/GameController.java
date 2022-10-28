@@ -6,13 +6,16 @@ import java.io.ByteArrayOutputStream;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import rwij.annotations.RenameFrom;
 
-public class t extends BasicGame {
+@RenameFrom(oldName = "t")
+public class GameController extends BasicGame {
     GameContainer a;
 
-    Main b;
+    @RenameFrom(oldName = "b")
+    Main main;
 
-    b35 c;
+    GameScene c;
 
     j d;
 
@@ -26,9 +29,11 @@ public class t extends BasicGame {
 
     boolean i;
 
-    boolean j;
+    @RenameFrom(oldName = "j")
+    boolean noSound;
 
-    boolean k;
+    @RenameFrom(oldName = "k")
+    boolean noMusic;
 
     boolean l;
 
@@ -104,7 +109,7 @@ public class t extends BasicGame {
 
     int U;
 
-    public t(String p0) {
+    public GameController(String p0) {
         super(null);
     }
 
@@ -221,9 +226,9 @@ public class t extends BasicGame {
 
         final ByteArrayOutputStream b = null;
 
-        final t c = null;
+        final GameController c = null;
 
-        t282(t p0, String p1, ByteArrayOutputStream p2) {
+        t282(GameController p0, String p1, ByteArrayOutputStream p2) {
             super();
         }
 

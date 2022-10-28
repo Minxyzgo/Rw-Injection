@@ -6,7 +6,7 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import com.corrodinggames.rts.game.map.MapLoader;
+import com.corrodinggames.rts.game.b.MapLoader;
 import com.corrodinggames.rts.game.f;
 import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.a.s;

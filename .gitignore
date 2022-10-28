@@ -3,3 +3,5 @@
 /annotations/build/
 /.gradle/
 /core/build/
+/game-lib-output.jar
+/core/testLib

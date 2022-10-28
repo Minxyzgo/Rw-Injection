@@ -8,7 +8,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
-import com.corrodinggames.rts.game.map.MapLoader;
+import com.corrodinggames.rts.game.b.MapLoader;
 import com.corrodinggames.rts.game.Team;
 import com.corrodinggames.rts.game.units.af;
 import com.corrodinggames.rts.game.units.custom.ag;
@@ -40,9 +40,11 @@ public abstract strictfp class GameEngine {
 
     public static Throwable aq;
 
-    public static boolean ar;
+    @RenameFrom(oldName = "ar")
+    public static boolean logColor;
 
-    public static boolean as;
+    @RenameFrom(oldName = "as")
+    public static boolean noBackGround;
 
     public static boolean at;
 
@@ -50,17 +52,23 @@ public abstract strictfp class GameEngine {
 
     public static boolean av;
 
-    public static boolean aw;
+    @RenameFrom(oldName = "aw")
+    public static boolean printUnits;
 
-    public static boolean ax;
+    @RenameFrom(oldName = "ax")
+    public static boolean outputUnitImage;
 
-    public static boolean ay;
+    @RenameFrom(oldName = "ay")
+    public static boolean oldReplay;
 
-    public static boolean az;
+    @RenameFrom(oldName = "az")
+    public static boolean steam;
 
-    public static boolean aA;
+    @RenameFrom(oldName = "aA")
+    public static boolean sandBox;
 
-    public static boolean aB;
+    @RenameFrom(oldName = "aB")
+    public static boolean noMods;
 
     public static String aC;
 

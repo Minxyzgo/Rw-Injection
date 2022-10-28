@@ -7,6 +7,8 @@ import com.corrodinggames.rts.gameFramework.g.Connection;
 import com.corrodinggames.rts.gameFramework.n;
 import com.corrodinggames.rts.gameFramework.utility.ah;
 import com.corrodinggames.rts.java.b.a;
+import rwij.annotations.RenameFrom;
+
 import java.util.concurrent.Semaphore;
 
 public class Main extends ac {
@@ -14,13 +16,13 @@ public class Main extends ac {
 
     public static boolean b;
 
-    public static String c;
+    public static String c = "Rusted Warfare";
 
     static Main m;
 
     public d37 d;
 
-    public String e;
+    public String e = "$28";
 
     ah f;
 
@@ -30,9 +32,10 @@ public class Main extends ac {
 
     a i;
 
-    public t j;
+    @RenameFrom(oldName = "j")
+    public GameController controller;
 
-    b35 k;
+    GameScene k;
 
     String[] l;
 
