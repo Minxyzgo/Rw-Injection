@@ -1,5 +1,8 @@
+import android.util.Log
 import org.junit.jupiter.api.Test
 import rwij.*
+import kotlin.reflect.full.functions
+import kotlin.reflect.jvm.kotlinFunction
 
 class ProxyTest {
 
@@ -43,6 +46,28 @@ class ProxyTest {
         }
 
         bc.close()
+    }
+
+    @Test
+    fun testProxyFunction2() {
+        Builder.libDir = "testLib"
+
+        val tree = Builder.getClassTreeByLibName("game-lib")
+
+        ProxyFactory.runInit {
+            setProxy(tree, "android.util.Log")
+        }
+
+        Log::class.setFunction {
+            addProxy(
+                Log::class.java.getMethod("d", String::class.java, String::class.java).kotlinFunction!!
+            ) { _: Nothing?, s1: String?, s2: String? ->
+                println("log: $s1, $s2")
+                1
+            }
+        }
+
+        Log.d("A", "b")
     }
 
     fun ts(i: Int, s: String){}

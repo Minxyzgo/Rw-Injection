@@ -116,8 +116,6 @@ object ProxyFactory {
         val subtract = proxyList.toMutableList().apply{ removeAll(proxyList0.split(",")) }
         subtract.forEach { setProxy0(tree.defPool[it]) }
 
-        println(subtract)
-
         info.store(fi.outputStream(), "")
     }
 

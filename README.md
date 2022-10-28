@@ -53,12 +53,12 @@ xx.c = 1
 如果你需要代理一个Rw class的函数， 那么采取以下代码: 
 ```kotlin
 ProxyFactory.runInit {
-    setProxy("a.a.b", Builder.getClassTreeByLibName("game-lib")) 
-    setProxy("ibxm.Channel", "ibxm.IBXM", Builder.getClassTreeByLibName("ibxm")) //你可以同时从其它lib中添加更多要被代理的类
+    setProxy(Builder.getClassTreeByLibName("game-lib"), "a.a.b") 
+    setProxy(Builder.getClassTreeByLibName("ibxm"), "ibxm.Channel", "ibxm.IBXM") //你可以同时从其它lib中添加更多要被代理的类
 }
 //注意，runInit应当在程序生命周期中只调用一次
 ```
-在调用`ProxyFactory.load()`后，对于以下定义的java class:
+对于以下定义的java class:
 ```java
 public class Example {
     void sample1() {
