@@ -389,6 +389,36 @@ fun CtClass.normalTypeInitStatement(): String? = when(this) {
     else -> "null"
 }
 
+fun CtClass.transformClass(): Class<*>  {
+    return when(name) {
+        "int" -> Int::class.java
+        "byte" -> Byte::class.java
+        "long" -> Long::class.java
+        "short" -> Short::class.java
+        "float" -> Float::class.java
+        "double" -> Double::class.java
+        "char" -> Char::class.java
+        "boolean" -> Boolean::class.java
+        "void" -> Void.TYPE
+        else -> {
+            Class.forName(
+                Descriptor.toJavaName(
+                    if(isArray) Descriptor.of(this) else name
+                ), false, ClassLoader.getSystemClassLoader()
+            )
+        }
+    }
+}
+
+fun Class<*>.normalTypeInitStatement(): Any? = when(this) {
+    Char::class.java -> ' '
+    Boolean::class.java -> false
+    Byte::class.java, Int::class.java, Long::class.java, Short::class.java -> 0
+    Unit::class.java -> Unit
+    Float::class.java, Double::class.java -> 0f
+    else -> null
+}
+
 private val innerPattern = Regex("""(?<=\.|\$)\w+""")
 
 /**

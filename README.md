@@ -9,7 +9,6 @@
 * [x] 支持缓存
 * [ ] 使用asm或kcp代替重命名的解决方案
 * [ ] gradle-插件
-* [ ] headless-simulation 子项目
 
 ## 如何使用？
 
@@ -25,6 +24,7 @@ dependencies {
     implementation("com.github.minxyzgo.rw-injection:core:master-SNAPSHOT")
 }
 ```
+注意！！1.14放弃支持，source部分暂时作废
 
 对于一个Rw class，获取它的field的值或修改有以下方式：
 ```java

@@ -2,6 +2,8 @@ package rwij
 
 import javassist.*
 import javassist.bytecode.AnnotationsAttribute
+import javassist.bytecode.Bytecode
+import javassist.bytecode.Descriptor
 import javassist.util.proxy.MethodHandler
 import rwij.annotations.Proxy
 import rwij.util.ClassTree
@@ -16,19 +18,20 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
+import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * @param source must be [KFunction].
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Function<*>> Any.setFunction(source: T, target: T) {
+fun <T : Function<*>> Any.setFunction(source: T, target: T?) {
     if(this::class.java.getAnnotation(Proxy::class.java) == null) {
         throw IllegalAccessException("unsupported proxy object")
     }
 
     val method = this::class.getMethodByKFunction(source as KFunction<*>)
     val proxyMapField = this::class.java.getDeclaredField("__proxy_map__")
-    val proxyMap = (proxyMapField.get(this) as? MutMFMap) ?: java.util.HashMap<Method, Function<*>>().also { proxyMapField.set(this, it) }
+    val proxyMap = ((proxyMapField.get(this) as? java.util.HashMap<*, *>) ?: java.util.HashMap<Method, Function<*>?>().also { proxyMapField.set(this, it) }) as java.util.HashMap<Method, Function<*>?>
     proxyMap[method] = target
 }
 
@@ -62,6 +65,11 @@ object ProxyFactory {
         }?.proxyMap
 
         val kf = proxyMap0?.get(thisMethod)
+        val containKey = proxyMap0?.containsKey(thisMethod) ?: false
+        //方法设置为空体时返回类型默认值
+        if(kf == null && containKey) {
+            return@MethodHandler thisMethod.returnType.normalTypeInitStatement()
+        }
 
         if(kf != null) {
             if(isAgent) {
@@ -87,7 +95,7 @@ object ProxyFactory {
     }
 
     /**
-     * 设置代理，根据给定的[tree]和要修改的类全称限定列表[proxyList]
+     * 设置代理，根据给定的[tree]和要修改的类全称限定列表[proxyList]，可传入形如”empty:class"的方式为该class的所有方法设置空体
      * @param tree 要更改的jar tree，通常使用[Builder.getClassTreeByLibName]获取
      */
     fun setProxy(tree: ClassTree, vararg proxyList: String) {
@@ -100,11 +108,13 @@ object ProxyFactory {
             load(fi.inputStream())
         }
 
+        fun fix(str: String) {
+            if(str.startsWith("empty:")) setEmpty(tree.defPool[str.removePrefix("empty:")]) else setProxy0(tree.defPool[str])
+        }
+
         val version by info.property(proxyVersion, true)
         if(version != proxyVersion) {
-            proxyList.forEach {
-                setProxy0(tree.defPool[it])
-            }
+            proxyList.forEach(::fix)
             return
         }
 
@@ -114,9 +124,16 @@ object ProxyFactory {
         info.setProperty("last_mod_time", System.currentTimeMillis().toString())
 
         val subtract = proxyList.toMutableList().apply{ removeAll(proxyList0.split(",")) }
-        subtract.forEach { setProxy0(tree.defPool[it]) }
+        subtract.forEach(::fix)
 
         info.store(fi.outputStream(), "")
+    }
+
+    private fun setEmpty(clazz: CtClass) {
+        clazz.declaredMethods.forEach {
+            it.modifiers = it.modifiers and (it.modifiers xor Modifier.NATIVE xor Modifier.ABSTRACT)
+            it.setBody(if(it.returnType != CtClass.voidType) "{ return ${it.returnType.normalTypeInitStatement()}; }" else "{ }")
+        }
     }
 
     private fun setProxy0(clazz: CtClass) {
@@ -183,13 +200,25 @@ object ProxyFactory {
 }
 
 class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
-    val proxyMap = mutableMapOf<Method, Function<*>>()
+    val proxyMap = mutableMapOf<Method, Function<*>?>()
 
     /**
     * @param source must be [KFunction].
     */
-    fun <T : Function<*>> addProxy(source: T, target: T) {
+    fun <T : Function<*>> addProxy(source: T, target: T?) {
         proxyMap[tClass.getMethodByKFunction(source as KFunction<*>)] = target
+    }
+
+    fun addProxy(name: String, vararg parameterTypes: KClass<*>, target: Function<*>?) {
+        val classes = parameterTypes.map(KClass<*>::java).toTypedArray()
+        val method = tClass.java.getDeclaredMethod(name, *classes)
+        proxyMap[method] = target
+    }
+
+    fun addProxy(name: String, desc: String, target: Function<*>?) {
+        val classes = Descriptor.getParameterTypes(desc, Builder.defClassPool).map(CtClass::transformClass).toTypedArray()
+        val method = tClass.java.getDeclaredMethod(name, *classes)
+        proxyMap[method] = target
     }
 }
 
@@ -273,9 +302,8 @@ fun Function<*>.call(vararg args: Any?): Any? {
     }
 }
 
-private typealias MFMap = Map<Method, Function<*>>
-private typealias MutMFMap = MutableMap<Method, Function<*>>
-//
+private typealias MFMap = Map<Method, Function<*>?>
+
 //typealias Callable = (args: Array<Any?>) -> Any?
 //typealias CallableBridge = (self: Any?) -> Callable
 
