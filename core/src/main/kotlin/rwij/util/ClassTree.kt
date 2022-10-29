@@ -46,16 +46,8 @@ class ClassTree(
 
     fun findTreeByPackage(
         packageName: String,
-        findFromRoot: Boolean = false,
-        index: Int = 0,
-        arr: List<String> = packageName.split("."),
     ): ClassTree {
-        if(findFromRoot) return allPackageFromRoot[packageName]
-            ?: throw IllegalArgumentException("package:$packageName is not in the root.")
-        val first = packages.firstOrNull { arr[index] == packageName }
-        return (if(index == arr.size - 1) first else
-            first?.findTreeByPackage(name))
-            ?: throw IllegalArgumentException("Cannot find package: $packageName by the given name from the current tree.")
+        return allPackageFromRoot[packageName]!!
     }
 
     fun loadCtClass(name: String, findByChildren: Boolean = false): CtClass {

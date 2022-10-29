@@ -2,11 +2,16 @@ import android.util.Log
 import com.Element
 import org.junit.jupiter.api.Test
 import rwij.*
+import java.io.File
 import kotlin.reflect.full.functions
 import kotlin.reflect.jvm.kotlinFunction
 
 class ProxyTest {
 
+    fun reload() {
+        Builder.releaseLib()
+        File("${Builder.libDir}/info.properties").apply { if(exists()) delete() }
+    }
     @Test
     fun testGetAndSetField() {
         val tobj = object {
@@ -25,6 +30,7 @@ class ProxyTest {
     @Test
     fun testProxyFunction() {
         Builder.libDir = "testLib"
+        reload()
 
         val tree = Builder.getClassTreeByLibName("game-lib")
 
@@ -52,6 +58,7 @@ class ProxyTest {
     @Test
     fun testProxyFunction2() {
         Builder.libDir = "testLib"
+        reload()
 
         val tree = Builder.getClassTreeByLibName("game-lib")
 
@@ -68,5 +75,15 @@ class ProxyTest {
 
         println(Element().numChildren)
         Log.d("A", "b")
+    }
+
+    @Test
+    fun testFindPackage() {
+        Builder.libDir = "testLib"
+        Builder.loadLib()
+        val tree = Builder.getClassTreeByLibName("game-lib")
+        val pack = tree.findTreeByPackage("com.corrodinggames.rts.game")
+        println(tree.allPackageFromRoot.keys)
+        println(pack.classesName)
     }
 }
