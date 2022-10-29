@@ -2,7 +2,6 @@ package rwij
 
 import javassist.*
 import javassist.bytecode.AnnotationsAttribute
-import javassist.bytecode.Bytecode
 import javassist.bytecode.Descriptor
 import javassist.util.proxy.MethodHandler
 import rwij.annotations.Proxy
@@ -18,7 +17,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * @param source must be [KFunction].
@@ -51,7 +49,7 @@ private fun KClass<*>.getMethodByKFunction(source: KFunction<*>): Method {
 
 @Suppress("unused")
 object ProxyFactory {
-    val proxyVersion = "0.0.1"
+    val proxyVersion = "0.0.2"
 
     @JvmField
     @Suppress("UNCHECKED_CAST")
@@ -95,11 +93,26 @@ object ProxyFactory {
     }
 
     /**
-     * 设置代理，根据给定的[tree]和要修改的类全称限定列表[proxyList]，可传入形如”empty:class"的方式为该class的所有方法设置空体
+     * 设置代理，根据给定的[tree]和要修改的类全称限定列表[proxyList]，可传入形如”empty:class"的方式为该class的所有方法设置空体.
+     *
+     * 同时，特殊的使用方法有 "empty:class".with(...)或withNon(...), 具体查看[String.with]和[String.withNon]
      * @param tree 要更改的jar tree，通常使用[Builder.getClassTreeByLibName]获取
      */
-    fun setProxy(tree: ClassTree, vararg proxyList: String) {
-        val currentListStr = proxyList.joinToString(",")
+    @Suppress("UNCHECKED_CAST")
+    fun setProxy(tree: ClassTree, vararg proxyList: Any) {
+        fun Pair<String, Array<String>>.toStr(): String {
+            return "${first}[${second.sorted().joinToString(";")}]"
+        }
+
+        val currentListStr = proxyList.joinToString(",") {
+            when(it) {
+                is String -> it
+                is Pair<*, *> -> {
+                    (it as Pair<String, Array<String>>).toStr()
+                }
+                else -> throw IllegalArgumentException()
+            }
+        }
 
         val fi = File("${Builder.libDir}/info.properties").apply {
             if(!exists()) createNewFile()
@@ -108,8 +121,37 @@ object ProxyFactory {
             load(fi.inputStream())
         }
 
-        fun fix(str: String) {
-            if(str.startsWith("empty:")) setEmpty(tree.defPool[str.removePrefix("empty:")]) else setProxy0(tree.defPool[str])
+        fun fix(any: Any) {
+            when(any) {
+                is String -> {
+                    if(any.startsWith("empty:"))
+                        setEmpty(tree.defPool[any.removePrefix("empty:")].declaredMethods)
+                    else
+                        setProxy0(tree.defPool[any])
+                }
+
+                is Pair<*, *> -> {
+                    any as Pair<String, Array<String>>
+                    val isNon = any.first.endsWith(":non")
+                    val clazz = tree.defPool[any.first.removePrefix("empty:").removeSuffix(":non")]
+                    val allName = any.second
+                    val methodArray = buildList {
+                        if(isNon) {
+                            addAll(clazz.declaredMethods.filter { !allName.contains(it.name) && !allName.contains(it.longName) })
+                        } else {
+                            allName.forEach { item ->
+                                if(item.contains("("))
+                                    add(clazz.declaredMethods.first { it.longName == item })
+                                else addAll(clazz.declaredMethods.filter { it.name == item })
+                            }
+                        }
+                    }
+
+                    setEmpty(methodArray.toTypedArray())
+                }
+
+                else -> throw IllegalArgumentException()
+            }
         }
 
         val version by info.property(proxyVersion, true)
@@ -119,18 +161,36 @@ object ProxyFactory {
         }
 
         val propertyName = tree.name + "_proxy_list"
-        val proxyList0 = info.getProperty(propertyName, "")
+        val proxyList0 = info.getProperty(propertyName, "").split(",")
         info.setProperty(propertyName, currentListStr)
         info.setProperty("last_mod_time", System.currentTimeMillis().toString())
 
-        val subtract = proxyList.toMutableList().apply{ removeAll(proxyList0.split(",")) }
+        val subtract = proxyList.filter {
+            when(it) {
+                is String -> !proxyList0.contains(it)
+                is Pair<*, *> -> !proxyList0.contains((it as Pair<String, Array<String>>).toStr())
+                else -> throw RuntimeException()
+            }
+        }
         subtract.forEach(::fix)
 
         info.store(fi.outputStream(), "")
     }
 
-    private fun setEmpty(clazz: CtClass) {
-        clazz.declaredMethods.forEach {
+    /**
+     * 给定一个列表，表示该字符串表示的类所有在列表中的方法设为空体
+     */
+    context(ProxyFactory)
+    fun String.with(vararg list: String) = this to list
+
+    /**
+     * 给定一个列表，表示该字符串表示的类所有除了在列表中的方法设为空体
+     */
+    context(ProxyFactory)
+    fun String.withNon(vararg list: String) = "$this:non" to list
+
+    private fun setEmpty(methods: Array<CtMethod>) {
+        methods.forEach {
             it.modifiers = it.modifiers and (it.modifiers xor Modifier.NATIVE xor Modifier.ABSTRACT)
             it.setBody(if(it.returnType != CtClass.voidType) "{ return ${it.returnType.normalTypeInitStatement()}; }" else "{ }")
         }

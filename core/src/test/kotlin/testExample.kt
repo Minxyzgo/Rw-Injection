@@ -8,10 +8,10 @@ import kotlin.reflect.jvm.kotlinFunction
 
 class ProxyTest {
 
-    fun reload() {
-        Builder.releaseLib()
-        File("${Builder.libDir}/info.properties").apply { if(exists()) delete() }
-    }
+//    fun reload() {
+//        Builder.releaseLib()
+//        File("${Builder.libDir}/info.properties").apply { if(exists()) delete() }
+//    }
     @Test
     fun testGetAndSetField() {
         val tobj = object {
@@ -30,7 +30,7 @@ class ProxyTest {
     @Test
     fun testProxyFunction() {
         Builder.libDir = "testLib"
-        reload()
+       // reload()
 
         val tree = Builder.getClassTreeByLibName("game-lib")
 
@@ -58,12 +58,15 @@ class ProxyTest {
     @Test
     fun testProxyFunction2() {
         Builder.libDir = "testLib"
-        reload()
+        //reload()
 
         val tree = Builder.getClassTreeByLibName("game-lib")
 
         ProxyFactory.runInit {
-            setProxy(tree, "android.util.Log", "empty:com.Element")
+            setProxy(tree,
+                "android.util.Log",
+                "empty:com.Element".withNon("loadCharsetIfNeededWithCurrentText")
+            )
         }
 
         Log::class.setFunction {
@@ -73,7 +76,7 @@ class ProxyTest {
             }
         }
 
-        println(Element().numChildren)
+        println(Element().tagName)
         Log.d("A", "b")
     }
 
