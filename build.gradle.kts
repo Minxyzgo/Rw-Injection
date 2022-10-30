@@ -35,7 +35,7 @@ plugins {
     java
 }
 group = "com.github.minxyzgo"
-version = "1.3"
+version = "1.4"
 
 sourceSets.main.configure {
     java {
