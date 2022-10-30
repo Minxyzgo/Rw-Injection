@@ -101,7 +101,7 @@ object ProxyFactory {
     @Suppress("UNCHECKED_CAST")
     fun setProxy(tree: ClassTree, vararg proxyList: Any) {
         fun Pair<String, Array<String>>.toStr(): String {
-            return "${first}[${second.sorted().joinToString(";")}]"
+            return "${first}[${second.sorted().joinToString(";") { it.replace(",", ";") }}]"
         }
 
         val currentListStr = proxyList.joinToString(",") {
