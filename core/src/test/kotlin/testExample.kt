@@ -48,7 +48,7 @@ class ProxyTest {
         }
         bc.close()
 
-        bc.setFunction(bc::close) {
+        bc.setFunction(bc::getSoTimeout) {
             println(i + 1)
         }
 

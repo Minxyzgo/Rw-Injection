@@ -84,8 +84,8 @@ object Builder {
 
         libraries.forEach { (k, v) ->
             val jarFile = File("$libDir/$k.jar")
+            if(excludes.contains(k) || !jarFile.exists()) return@forEach
             defClassPool.appendClassPath(jarFile.absolutePath)
-            if(excludes.contains(k)) return@forEach
             v.initByJarFile(jarFile)
         }
     }

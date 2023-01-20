@@ -60,16 +60,21 @@ project(":core") {
     addDependencies()
 }
 
+project(":gradle-plugin") {
+    dependencies {
+        api(project(":core"))
+    }
+}
+
 tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
 
 fun Project.addDependencies() {
     dependencies {
-        api("org.javassist:javassist:3.29.2-GA")
+        implementation("org.javassist:javassist:3.29.2-GA")
         implementation("com.squareup:javapoet:1.13.0")
         implementation(kotlin("reflect"))
-
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
         testCompileOnly(project(":source"))
@@ -86,6 +91,7 @@ task("publishAll") {
     dependsOn(rootProject.tasks.getByName("publishMavenPublicationToMavenLocal"))
     dependsOn(project(":source").tasks.getByName("publishMavenPublicationToMavenLocal"))
     dependsOn(project(":core").tasks.getByName("publishMavenPublicationToMavenLocal"))
+    dependsOn(project(":gradle-plugin").tasks.getByName("publishMavenPublicationToMavenLocal"))
 }
 
 fun Project.publish() {

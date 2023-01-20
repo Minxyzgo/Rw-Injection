@@ -3,7 +3,6 @@ package rwij
 import javassist.*
 import javassist.bytecode.AnnotationsAttribute
 import javassist.bytecode.Descriptor
-import javassist.util.proxy.MethodHandler
 import rwij.annotations.Proxy
 import rwij.util.ClassTree
 import rwij.util.property
@@ -11,7 +10,7 @@ import java.io.File
 import java.lang.reflect.Method
 import java.net.URL
 import java.net.URLClassLoader
-import java.util.Properties
+import java.util.*
 import kotlin.jvm.functions.FunctionN
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
@@ -53,30 +52,32 @@ object ProxyFactory {
 
     @JvmField
     @Suppress("UNCHECKED_CAST")
-    val handler = MethodHandler { self, thisMethod, proceed, args ->
-        var isAgent = false
-        val proxyMap0: MFMap? = (if(self != null) {
-            val agent = self::class.java.getDeclaredField("__proxy_map__")
-            agent.get(self) as? MFMap
-        } else null) ?: agentMap[thisMethod.declaringClass]?.apply {
-            isAgent = true
-        }?.proxyMap
+    val handler = object : MethodHandler {
+        override fun invoke(self: Any?, thisMethod: Method, proceed: Method, args: Array<Any>): Any? {
+            var isAgent = false
+            val proxyMap0: MFMap? = (if(self != null) {
+                val agent = self::class.java.getDeclaredField("__proxy_map__")
+                agent.get(self) as? MFMap
+            } else null) ?: agentMap[thisMethod.declaringClass]?.apply {
+                isAgent = true
+            }?.proxyMap
 
-        val kf = proxyMap0?.get(thisMethod)
-        val containKey = proxyMap0?.containsKey(thisMethod) ?: false
-        //方法设置为空体时返回类型默认值
-        if(kf == null && containKey) {
-            return@MethodHandler thisMethod.returnType.normalTypeInitStatement()
-        }
-
-        if(kf != null) {
-            if(isAgent) {
-                kf.call(self, *args)
-            } else {
-                kf.call(*args)
+            val kf = proxyMap0?.get(thisMethod)
+            val containKey = proxyMap0?.containsKey(thisMethod) ?: false
+            //方法设置为空体时返回类型默认值
+            if(kf == null && containKey) {
+                return thisMethod.returnType.normalTypeInitStatement()
             }
-        } else {
-            proceed.invoke(self, *args)
+
+            return if(kf != null) {
+                if(isAgent) {
+                    kf.call(self, *args)
+                } else {
+                    kf.call(*args)
+                }
+            } else {
+                proceed.invoke(self, *args)
+            }
         }
     }
 
@@ -98,6 +99,7 @@ object ProxyFactory {
      * 同时，特殊的使用方法有 "empty:class".with(...)或withNon(...), 具体查看[String.with]和[String.withNon]
      * @param tree 要更改的jar tree，通常使用[Builder.getClassTreeByLibName]获取
      */
+    @LibRequiredApi
     @Suppress("UNCHECKED_CAST")
     fun setProxy(tree: ClassTree, vararg proxyList: Any) {
         fun Pair<String, Array<String>>.toStr(): String {
@@ -257,14 +259,17 @@ object ProxyFactory {
     fun <T : Any> addAgent(clazz: Class<T>, agent: FunctionAgent<T>) {
         agentMap[clazz] = agent
     }
+
+    @RequiresOptIn("调用这个方法需要运行时javassist lib的支持")
+    annotation class LibRequiredApi
 }
 
 class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
     val proxyMap = mutableMapOf<Method, Function<*>?>()
 
     /**
-    * @param source must be [KFunction].
-    */
+     * @param source must be [KFunction].
+     */
     fun <T : Function<*>> addProxy(source: T, target: T?) {
         proxyMap[tClass.getMethodByKFunction(source as KFunction<*>)] = target
     }
@@ -281,6 +286,34 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
         proxyMap[method] = target
     }
 }
+
+interface MethodHandler {
+    /**
+     * Is called when a method is invoked on a proxy instance associated
+     * with this handler.  This method must process that method invocation.
+     *
+     * @param self          the proxy instance.
+     * @param thisMethod    the overridden method declared in the super
+     * class or interface.
+     * @param proceed       the forwarder method for invoking the overridden
+     * method.  It is null if the overridden method is
+     * abstract or declared in the interface.
+     * @param args          an array of objects containing the values of
+     * the arguments passed in the method invocation
+     * on the proxy instance.  If a parameter type is
+     * a primitive type, the type of the array element
+     * is a wrapper class.
+     * @return              the resulting value of the method invocation.
+     *
+     * @throws Throwable    if the method invocation fails.
+     */
+    @Throws(Throwable::class)
+    operator fun invoke(
+        self: Any?, thisMethod: Method, proceed: Method,
+        args: Array<Any>
+    ): Any?
+}
+
 
 @Suppress("UNCHECKED_CAST")
 fun Function<*>.call(vararg args: Any?): Any? {
@@ -366,5 +399,4 @@ private typealias MFMap = Map<Method, Function<*>?>
 
 //typealias Callable = (args: Array<Any?>) -> Any?
 //typealias CallableBridge = (self: Any?) -> Callable
-
 
