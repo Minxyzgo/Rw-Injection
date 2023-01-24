@@ -91,12 +91,12 @@ fun Project.publish() {
             }
         }
 
-        repositories {
-            maven {
-                mavenLocal()
-                url = uri(rootDir.absolutePath + "/repo")
-            }
-        }
+//        repositories {
+//            maven {
+//                mavenLocal()
+//                url = uri(rootDir.absolutePath + "/repo")
+//            }
+//        }
     }
 }
 
