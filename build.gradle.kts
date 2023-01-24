@@ -5,25 +5,28 @@ subprojects {
     apply(plugin = "maven-publish")
 
     repositories {
+        google()
         mavenCentral()
         maven("https://jitpack.io")
     }
 }
 
 allprojects {
-    publish()
+    if(name != "gradle-plugin") publish()
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
         kotlinOptions {
             jvmTarget = JavaVersion.VERSION_1_8.toString()
-            freeCompilerArgs = freeCompilerArgs + listOf(
-                "-Xcontext-receivers"
-            )
+//            freeCompilerArgs = freeCompilerArgs + listOf(
+//                "-Xcontext-receivers", "-Xskip-prerelease-check"
+//            )
+            //gradle dsl目前无法支持context receivers遂废弃
         }
     }
 }
 
 repositories {
+    google()
     mavenCentral()
     maven("https://jitpack.io")
 }
@@ -35,34 +38,34 @@ plugins {
     java
 }
 group = "com.github.minxyzgo"
-version = "1.4"
-
-sourceSets.main.configure {
-    java {
-        exclude("**/META-INF/**")
-    }
-
-    resources {
-        srcDirs("$rootDir/lib")
-    }
-}
+version = "1.5"
 
 with(java) {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-project(":annotations") {
-    addDependencies()
-}
-
 project(":core") {
-    addDependencies()
+    dependencies {
+        implementation("org.javassist:javassist:3.29.2-GA")
+        implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+        api(kotlin("reflect"))
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+        testCompileOnly(project(":source"))
+    }
 }
 
 project(":gradle-plugin") {
     dependencies {
         api(project(":core"))
+        api("org.javassist:javassist:3.29.2-GA")
+
+        sourceSets.main.configure {
+            resources {
+                srcDirs("$rootDir/lib")
+            }
+        }
     }
 }
 
@@ -70,28 +73,10 @@ tasks.withType(JavaCompile::class) {
     options.encoding = "UTF-8"
 }
 
-fun Project.addDependencies() {
-    dependencies {
-        implementation("org.javassist:javassist:3.29.2-GA")
-        implementation("com.squareup:javapoet:1.13.0")
-        implementation(kotlin("reflect"))
-        testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
-        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-        testCompileOnly(project(":source"))
-    }
-
-    sourceSets.main.configure {
-        resources {
-            srcDirs(rootProject.sourceSets.main.get().resources)
-        }
-    }
-}
-
 task("publishAll") {
     dependsOn(rootProject.tasks.getByName("publishMavenPublicationToMavenLocal"))
-    dependsOn(project(":source").tasks.getByName("publishMavenPublicationToMavenLocal"))
     dependsOn(project(":core").tasks.getByName("publishMavenPublicationToMavenLocal"))
-    dependsOn(project(":gradle-plugin").tasks.getByName("publishMavenPublicationToMavenLocal"))
+    //dependsOn(project(":gradle-plugin").tasks.getByName("publishMavenPublicationToMavenLocal"))
 }
 
 fun Project.publish() {
@@ -100,14 +85,20 @@ fun Project.publish() {
             create<MavenPublication>("maven") {
                 groupId = "com.github.minxyzgo"
                 artifactId = this@publish.name
-                version = this@publish.version.toString()
+                version = rootProject.version.toString()
 
                 from(components.getByName("java"))
             }
         }
+
+        repositories {
+            maven {
+                mavenLocal()
+                url = uri(rootDir.absolutePath + "/repo")
+            }
+        }
     }
 }
-
 
 //
 //task("start", Jar::class) {

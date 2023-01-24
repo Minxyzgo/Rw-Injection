@@ -2,17 +2,30 @@ plugins {
     `java-gradle-plugin`
 }
 
-tasks.jar {
-    from(rootDir) {
-        include("game-lib-output.jar")
-    }
-}
-
 gradlePlugin {
     plugins {
         create("ex") {
-            id = "com.github.rwij.plugin"
-            implementationClass = "rwij.GradlePlugin"
+            id = "com.github.minxyzgo.rwij"
+            implementationClass = "com.github.minxyzgo.rwij.GradlePlugin"
+        }
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = "com.github.minxyzgo.rwij"
+            artifactId =  "com.github.minxyzgo.rwij.gradle.plugin"
+            version = rootProject.version.toString()
+
+            from(components.getByName("java"))
+        }
+    }
+
+    repositories {
+        maven {
+            mavenLocal()
+            url = uri(rootDir.absolutePath + "/repo")
         }
     }
 }
