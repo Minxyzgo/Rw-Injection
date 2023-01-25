@@ -52,7 +52,7 @@ private fun KClass<*>.getProxyMethodByKFunction(source: KFunction<*>): Method {
 
 @Suppress("unused")
 object ProxyFactory {
-    val proxyVersion = "0.0.4"
+    val proxyVersion = "0.0.4-beta"
 
     /**
      * 防kt不防java (笑
@@ -92,7 +92,7 @@ object ProxyFactory {
     }
 
     private var isLoaded = false
-    private val agentMap = mutableMapOf<String, FunctionAgent<*>>()
+    internal val agentMap = mutableMapOf<String, FunctionAgent<*>>()
 
     /**
      * 提供简便的初始化模块。在[block]内调用[setProxy]执行复杂的加载操作
@@ -170,6 +170,7 @@ object ProxyFactory {
         val version by info.property(proxyVersion, true)
         if(version != proxyVersion) {
             proxyList.forEach(::fix)
+            info.setProperty("version", proxyVersion)
             return
         }
 
@@ -225,9 +226,10 @@ object ProxyFactory {
         val constPool = clazz.classFile2.constPool
 
         clazz.methods.filter {
-            it.methodInfo2.codeAttribute != null && !it.hasAnnotation(Proxy::class.java)
+            it.methodInfo2.codeAttribute != null && !it.name.startsWith("__proxy__") && !it.hasAnnotation(Proxy::class.java)
         }.forEach {
-            val proceed = CtNewMethod.copy(it, "__proxy__${it.name}", clazz, null)
+            val proceedName = "__proxy__${it.name}"
+            val proceed = CtNewMethod.copy(it, proceedName, clazz, null)
             clazz.addMethod(proceed)
 
             val r = "\$r"

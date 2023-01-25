@@ -25,6 +25,11 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven("https://jitpack.io")
+}
+
 apply<com.github.minxyzgo.rwij.GradlePlugin>()
 dependencies {
     injectRwLib("master-SNAPSHOT")
@@ -108,6 +113,11 @@ buildscript {
     }
 }
 
+repositories {
+    mavenCentral()
+    maven("https://jitpack.io")
+}
+
 apply<com.github.minxyzgo.rwij.GradlePlugin>()
 dependencies {
     injectRwLib("master-SNAPSHOT")
@@ -120,6 +130,7 @@ injection {
 }
 ```
 
+在你完成了配置以后，plugin提供了`rebuildJar`task，这将执行`injection`的内容，并输出jar到lib下
 ## 动态代理模式
 如果你想在运行期方便修改各种class，只需要`injectRwLib("master-SNAPSHOT", true)`启动动态代理
 

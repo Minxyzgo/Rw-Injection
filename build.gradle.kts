@@ -46,9 +46,15 @@ with(java) {
 }
 
 project(":core") {
+    sourceSets.getByName("test").resources {
+        srcDirs("$rootDir/lib")
+    }
     dependencies {
-        implementation("org.javassist:javassist:3.29.2-GA")
-        implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+        compileOnly("org.javassist:javassist:3.29.2-GA")
+        compileOnly("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+        testCompileOnly(fileTree("dir" to "$rootDir/lib", "include" to listOf("*.jar")))
+        testImplementation("org.javassist:javassist:3.29.2-GA")
+        testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
         api(kotlin("reflect"))
         testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
         testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
@@ -59,6 +65,7 @@ project(":gradle-plugin") {
     dependencies {
         api(project(":core"))
         api("org.javassist:javassist:3.29.2-GA")
+        api("com.fasterxml.jackson.core:jackson-databind:2.13.4")
 
         sourceSets.main.configure {
             resources {
