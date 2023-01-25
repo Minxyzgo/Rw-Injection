@@ -1,77 +1,150 @@
-# Rw-Injection - 适用于Rw的注入库 & 映射库
+# Rw-Injection - 适用于Rw的注入库
 ## 支持的功能：
-* 为Rw游戏库创建映射表，并能支持直接调用
-* 使用一套基于[javassist](https://github.com/jboss-javassist/javassist)的代理服务，支持实时代理任意方法
+* 使用一套基于[javassist](https://github.com/jboss-javassist/javassist)的代理服务，支持静态/动态代理
 
 ## TODO
-* [ ] 支持编译source内的 Overwrite 的代码
-* [ ] 支持自动设置代理 & hot-load
 * [x] 支持缓存
-* [ ] 使用asm或kcp代替重命名的解决方案
-* [ ] gradle-插件
+* [x] 支持加载jadx
+* [x] gradle-插件
+* [ ] 加快构建速率
 
 ## 如何使用？
 
-build.gradle.kts添加如下代码
+`build.gradle.kts` 添加如下代码
 ```kotlin
-repositories {
-    mavenCentral()
-    maven("https://jitpack.io")
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+
+
+    dependencies {
+        classpath("com.github.minxyzgo.rw-injection:com.github.minxyzgo.rwij.gradle.plugin:master-SNAPSHOT")
+    }
 }
 
+apply<com.github.minxyzgo.rwij.GradlePlugin>()
 dependencies {
-    compileOnly("com.github.minxyzgo.rw-injection:source:master-SNAPSHOT") //添加映射库
-    implementation("com.github.minxyzgo.rw-injection:core:master-SNAPSHOT")
+    injectRwLib("master-SNAPSHOT")
 }
 ```
-注意！！1.14放弃支持，source部分暂时作废
+## 静态代理模式
+静态代理模式下，只会在编译期间在`classpath`内写入诸如`javassist`等依赖库，只会写入核心库`core`提供方便的代理方案
 
-对于一个Rw class，获取它的field的值或修改有以下方式：
-```java
-//class 定义
-public class Example {
-    @RenameFrom(oldName = "a")
-    Object field = null;
-    
-    int c = 0;
-    //...
-}
-```
+使用静态代理模式将极大减小运行期压力和缩小Jar所占空间大小，并且直接向`classpath`注入rw所需的lib，这将更为方便地兼容其它诸如android的平台
 
+缺点: 运行期你将无法对类进行进一步修改
+
+## 插件的使用
+
+当调用`apply<com.github.minxyzgo.rwij.GradlePlugin>()`时，插件开始加载，此时插件会释放rw lib到`projectDir/lib/`下
+
+如果该path已经存在，则不会自动释放rw lib
+
+### injectRwLib
+`injectRwLib`是插件提供的一个方便的函数，它只能在`dependencies{}`内调用
+
+它的定义如下`injectRwLib(version: String, useRuntimeLib: Boolean)`
+
+其中`version`是依赖的rwij版本， `useRuntimeLib`决定是否启用动态代理模式，默认为false，将在之后讲解
+
+### injection
+`injection`是插件提供的dsl，是静态代理模式的实现，它可以很方便地进行诸如反混淆，加载jadx和代理操作
+
+`injection`提供下列函数
+
+#### setProxy
+`setProxy(lib: Libs, vararg proxyList: Any)`设置指定Lib内的某个class为代理
+
+`proxyList`指代理列表，可以传入class name批量实现代理，下面为一个示例
 ```kotlin
-val xx = Example()
-xx.get { ::field } // 获取
-xx.set(xx::field, null) // 设置
+setProxy(Libs.`game-lib`, "a.a.b", "a.a.a")
+```
+这将代理class`a.a.b`和`a.a.a`，之后便可以使用`core`内提供的函数来方便地进行代理，如何使用将在之后提到
 
-//并请注意，如果一个field它没有被Rename映射过，那么它不能采取上述方式，只能采取传统方式:
-xx.c //get
-xx.c = 1
+此外`proxyList`还有十分方便的方法
 
-//换言之， 如果一个field被Rename映射，就只能采取第一种方式，反之则必须采取第二种
+若使用```setProxy(Libs.`game-lib`, "empty:a.a.b")```这意味者将`a.a.b`内的**所有方法**设置为空体，即所有方法不会包含任何实现，只会返回该方法的默认值
+
+如函数返回类型为`Object`则默认返回`null`，类型为`int`则返回`0`，与java类型默认值一致，以此类推
+
+若使用```setProxy(Libs.`game-lib`, "empty:a.a.b".with("a"))```表示`a.a.b`内方法名为`a`将会被设置为空体
+
+同时，还可以同时设置多个方法，并且带签名，一个示例是```setProxy(Libs.`game-lib`, "empty:a.a.b".with("a(IIZLjava/lang/String;)"， “b”))```
+
+还有另一个方法是`withNon(args..)`它意味着除了传入的方法都会被设置为空体，其余用法与`with(args..)`一致
+
+#### deobfuscation
+`deobfuscation`传入一个`classTree`，它会重命名所有与包名冲突的类，如果该包没有这样的类则可以忽略不用
+一个示例是`deobfuscation(Libs.`game-lib`.classTree)`
+
+#### initJadx
+```kotlin
+fun initJadx(
+    fileName: String,
+    dir: String = projectDir,
+    lib: Libs = Libs.`game-lib`,
+    otherTree: Array<Libs> = emptyArray()
+)
+```
+其中`fileName`是jadx项目文件名(不包含.jadx后缀)，默认从项目路径开始寻找
+
+这将加载jadx项目文件并为指定lib进行重命名操作
+
+下面是一个综合以上示例的例子
+```kotlin
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+    }
+
+
+    dependencies {
+        classpath("com.github.minxyzgo.rw-injection:com.github.minxyzgo.rwij.gradle.plugin:master-SNAPSHOT")
+    }
+}
+
+apply<com.github.minxyzgo.rwij.GradlePlugin>()
+dependencies {
+    injectRwLib("master-SNAPSHOT")
+}
+
+injection {
+    deobfuscation(com.github.minxyzgo.rwij.Libs.`game-lib`)
+    initJadx("game-lib.jar")
+    setProxy(Libs.`game-lib`, "a.a.b", "a.a.c".with("c"), "a.a.d".withNon("a", "b(IZ)"))
+}
 ```
 
-如果你需要代理一个Rw class的函数， 那么采取以下代码: 
+## 动态代理模式
+如果你想在运行期方便修改各种class，只需要`injectRwLib("master-SNAPSHOT", true)`启动动态代理
+
+动态代理模式下，rw lib将不会自动写入classpath，而是写入resources，且自动导入`javassist`等需要的库
+
+此时如果你需要代理一个Rw class的函数， 那么在程序中采取以下代码: 
 ```kotlin
 ProxyFactory.runInit {
-    setProxy(Builder.getClassTreeByLibName("game-lib"), "a.a.b") 
-    setProxy(Builder.getClassTreeByLibName("ibxm"), "ibxm.Channel", "ibxm.IBXM") //你可以同时从其它lib中添加更多要被代理的类
+    setProxy("...")
+    setProxy("...") 
 }
 //注意，runInit应当在程序生命周期中只调用一次
 ```
-对于以下定义的java class:
-```java
-public class Example {
-    void sample1() {
-        System.out.println(12345);
-    }
-    
-    void sample2(int v) {
-        //...
-    }
-}
-```
-可以: 
+其中`setProxy`用法同上面一致
+
+## 代理方法
+当你使用`injectRwLib`时，无论静态代理还是动态代理都已经写入了`core`库，对一个函数进行代理则可以用以下方法
+
+示例
 ```kotlin
+class Example {
+    fun sample1() = 12345
+    
+    fun sample2(i: Int)
+} //请确保该类在setProxy中
 val e = Example()
 e.sample1() // 12345
 Example::class.setFunction {
@@ -80,6 +153,16 @@ Example::class.setFunction {
     }
 
     addProxy(Example::sample2) { self, i -> // 自动推断为 （Example, Int) -> Unit. 因此可以用idea自动补全
+        println(i)
+    }
+
+    // 函数名 + 参数列表
+    addProxy("sample2", Int::class) { self: Example, i: Int -> // 等效于上面函数，但无法自动推断，可以自行填充参数
+        println(i)
+    }
+
+    // 函数名 + 签名
+    addProxy("sample2", "(I)") { self: Example, i: Int -> // 等效于上面函数，但无法自动推断，可以自行填充参数
         println(i)
     }
 }
@@ -94,47 +177,3 @@ e.setFunction(e::sample1) {
 e.sample1() // 234
 ```
 因此，代理优先级为 对象代理 > 类代理 > 原始函数
-
-## source 贡献映射
-映射是十分有用的特性，可以将不含任何意义的源rw代码中的字段名映射为一个有意义的字段名，这将大大增加可读性并易于对源码解读。
-
-任何有关的代码都在`source`子项目中。
-
-### 开始
-假设有以下类
-```java
-package a.a;
-public class a {
-    public Object c;
-    void q() {
-        
-    }
-}
-```
-当你通过`jadx`或者`cfr`等反编译器确切的了解class`a`的功能后，你可以为其取一个合适的名字，例如`Parser`对`class a`,`parse`对`method b`, `tree`对`field c`
-
-你都可以如下编写:
-```java
-package a.a;
-import rwij.annotations.RenameFrom;
-@RenameFrom(oldName = "a")
-public class Parser {
-    @RenameFrom(oldName = "c")
-    public Object tree;
-    @RenameFrom(oldName = "q")
-    void parse() {
-        
-    }
-}
-```
-请注意，若接下来需要继续修改映射名，保留`RenameFrom`且无需再次更改`oldName`.例如：将`Parser`转化为`TreeParser`,只需直接更改class name
-而无需更改`RenameFrom`的`oldName`，它应该保留为`@RenameFrom(oldName = "a")`
-
-此外如果你同样确切的了解一个反编译方法的代码的实现，你也可以将其添加进映射的方法体。现在它是无用的，仅是为了阅读，但以后可能会对其编译。
-
-另外一点需要注意的是，当你更改了任意一个映射名后，你应当使用ide中的重命名来进行修正其它地方的引用。
-
-### 部分注解的作用
-
- * `@Additional`表示生成器在生成期间为了能通过编译而不得不增加字段或方法，它本不应该出现在类中，因此你不应该对其进行任何操作。 当一个类的相关映射全部编写完成并能通过编译后，便可以删掉有关注释及其方法和字段.
- * `@Fixed`表示为了能够通过编译，其方法的类型，实现等可能与实际不符，它是需要被重新编写的。

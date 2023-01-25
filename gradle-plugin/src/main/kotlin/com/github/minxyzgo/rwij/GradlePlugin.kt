@@ -37,10 +37,7 @@ open class GradlePlugin : Plugin<Project> {
         fun DependencyHandler.injectRwLib(
             version: String,
             useRuntimeLib: Boolean = false,
-            libDir: String = "lib"
         ): Unit = with(rootProject){
-            Builder.libDir = rootProject.projectDir.absolutePath + "/" + libDir
-
             implementation("com.github.minxyzgo.rw-injection:core:$version")
             if(useRuntimeLib) {
                 implementation("org.javassist:javassist:3.29.2-GA")
@@ -51,7 +48,7 @@ open class GradlePlugin : Plugin<Project> {
                     it.srcDir(Builder.libDir)
                 }
             } else {
-                implementation(fileTree(mapOf("dir" to "$rootDir/$libDir", "include" to "*.jar")))
+                implementation(fileTree(mapOf("dir" to "$projectDir/lib", "include" to "*.jar")))
             }
         }
 

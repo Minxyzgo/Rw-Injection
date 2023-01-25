@@ -5,6 +5,7 @@ import com.github.minxyzgo.rwij.util.getParameterTypes
 import com.github.minxyzgo.rwij.util.property
 import javassist.*
 import javassist.bytecode.AnnotationsAttribute
+import javassist.bytecode.Descriptor
 import java.io.File
 import java.lang.reflect.Method
 import java.net.URL
@@ -149,7 +150,7 @@ object ProxyFactory {
                         } else {
                             allName.forEach { item ->
                                 if(item.contains("("))
-                                    add(clazz.declaredMethods.first { it.longName == item })
+                                    add(clazz.declaredMethods.first { it.name + Descriptor.toString(it.signature) == item })
                                 else addAll(clazz.declaredMethods.filter { it.name == item })
                             }
                         }
