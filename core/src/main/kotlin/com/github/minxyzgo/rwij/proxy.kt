@@ -1,11 +1,13 @@
 package com.github.minxyzgo.rwij
 
 import com.github.minxyzgo.rwij.util.ClassTree
+import com.github.minxyzgo.rwij.util.getDesc
 import com.github.minxyzgo.rwij.util.getParameterTypes
 import com.github.minxyzgo.rwij.util.property
 import javassist.*
 import javassist.bytecode.AnnotationsAttribute
 import javassist.bytecode.Descriptor
+import javassist.bytecode.annotation.StringMemberValue
 import java.io.File
 import java.lang.reflect.Method
 import java.net.URL
@@ -50,7 +52,7 @@ private fun KClass<*>.getProxyMethodByKFunction(source: KFunction<*>): Method {
 
 @Suppress("unused")
 object ProxyFactory {
-    val proxyVersion = "0.0.3"
+    val proxyVersion = "0.0.4"
 
     /**
      * 防kt不防java (笑
@@ -64,12 +66,14 @@ object ProxyFactory {
             val proxyMap0: MFMap? = (if(self != null) {
                 val agent = self::class.java.getDeclaredField("__proxy_map__")
                 agent.get(self) as? MFMap
-            } else null) ?: agentMap[thisMethod.declaringClass]?.apply {
+            } else null) ?: agentMap[thisMethod.declaringClass.name]?.apply {
                 isAgent = true
             }?.proxyMap
 
-            val kf = proxyMap0?.get(thisMethod)
-            val containKey = proxyMap0?.containsKey(thisMethod) ?: false
+            val desc = thisMethod.getDeclaredAnnotation(Proxy::class.java).desc
+
+            val kf = proxyMap0?.get(desc)
+            val containKey = proxyMap0?.containsKey(desc) ?: false
             //方法设置为空体时返回类型默认值
             if(kf == null && containKey) {
                 return thisMethod.returnType.normalTypeInitStatement()
@@ -88,7 +92,7 @@ object ProxyFactory {
     }
 
     private var isLoaded = false
-    private val agentMap = mutableMapOf<Class<*>, FunctionAgent<*>>()
+    private val agentMap = mutableMapOf<String, FunctionAgent<*>>()
 
     /**
      * 提供简便的初始化模块。在[block]内调用[setProxy]执行复杂的加载操作
@@ -218,11 +222,14 @@ object ProxyFactory {
             )
         }
 
+        val constPool = clazz.classFile2.constPool
+
         clazz.methods.filter {
             it.methodInfo2.codeAttribute != null && !it.hasAnnotation(Proxy::class.java)
         }.forEach {
             val proceed = CtNewMethod.copy(it, "__proxy__${it.name}", clazz, null)
             clazz.addMethod(proceed)
+
             val r = "\$r"
             val sig = "\$sig"
             val args = "\$args"
@@ -234,14 +241,19 @@ object ProxyFactory {
                         m1.setAccessible(true);
                         java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${it.name}", $sig);
                         m2.setAccessible(true);
-                        ${if(it.returnType != CtClass.voidType) "return" else ""} ($r) rwij.ProxyFactory.handler.invoke(
+                        ${if(it.returnType != CtClass.voidType) "return" else ""} ($r) com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(
                             ${if(!Modifier.isStatic(it.modifiers)) "this" else "null"}, m1, m2, $args);
                     }
                 """.trimIndent()
             )
+
+            val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
+            val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
+            proxyAnnotation.addMemberValue("desc", StringMemberValue(it.getDesc(), constPool))
+            annotationsAttribute.addAnnotation(proxyAnnotation)
+            it.methodInfo.addAttribute(annotationsAttribute)
         }
 
-        val constPool = clazz.classFile2.constPool
         val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
         val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
         annotationsAttribute.addAnnotation(proxyAnnotation)
@@ -273,21 +285,25 @@ object ProxyFactory {
      * 为单一class添加全局代理，一般可以使用[KClass.setFunction]
      */
     fun <T : Any> addAgent(clazz: Class<T>, agent: FunctionAgent<T>) {
-        agentMap[clazz] = agent
+        agentMap[clazz.name] = agent
     }
+
+    private fun CtMethod.getDesc() =
+        "$name(${this.parameterTypes.joinToString(",") { it.name }})"
 }
 
 /**
  * Class代理解决方案，提供有用的函数便于实现代理
  */
 class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
-    internal val proxyMap = mutableMapOf<Method, Function<*>?>()
+    internal val proxyMap = mutableMapOf<String, Function<*>?>()
 
     /**
      * @param source must be [KFunction].
      */
     fun <T : Function<*>> addProxy(source: T, target: T?) {
-        proxyMap[tClass.getProxyMethodByKFunction(source as KFunction<*>)] = target
+        tClass.getProxyMethodByKFunction(source as KFunction<*>)
+        proxyMap[tClass.getProxyMethodByKFunction(source as KFunction<*>).getDesc()] = target
     }
 
     /**
@@ -297,7 +313,7 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
     fun addProxy(name: String, vararg parameterTypes: KClass<*>, target: Function<*>?) {
         val classes = parameterTypes.map(KClass<*>::java).toTypedArray()
         val method = tClass.getProxyMethodByKFunction(tClass.java.getDeclaredMethod(name, *classes).kotlinFunction!!)
-        proxyMap[method] = target
+        proxyMap[method.getDesc()] = target
     }
 
     /**
@@ -307,7 +323,7 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
     fun addProxy(name: String, desc: String, target: Function<*>?) {
         val classes = getParameterTypes(desc)
         val method = tClass.getProxyMethodByKFunction(tClass.java.getDeclaredMethod(name, *classes).kotlinFunction!!)
-        proxyMap[method] = target
+        proxyMap[method.getDesc()] = target
     }
 }
 
@@ -419,7 +435,7 @@ fun Function<*>.call(vararg args: Any?): Any? {
     }
 }
 
-private typealias MFMap = Map<Method, Function<*>?>
+private typealias MFMap = Map<String, Function<*>?>
 
 //typealias Callable = (args: Array<Any?>) -> Any?
 //typealias CallableBridge = (self: Any?) -> Callable

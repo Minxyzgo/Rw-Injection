@@ -1,10 +1,14 @@
 package com.github.minxyzgo.rwij.util
 
+import java.lang.reflect.Method
+
 /*
         ----This File----
     用于去除对javassist的依赖
  */
 
+internal fun Method.getDesc() =
+    "$name(${this.parameterTypes.joinToString(",") { it.name }})"
 
 @Suppress("UNCHECKED_CAST")
 internal fun getParameterTypes(desc: String): Array<Class<*>> {
