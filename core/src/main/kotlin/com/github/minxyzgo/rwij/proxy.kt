@@ -58,6 +58,7 @@ private fun checkMethodIfValid(method: Method) {
 @Suppress("unused")
 object ProxyFactory {
     val proxyVersion = "0.0.4-beta"
+    var useCache = true
 
     /**
      * 防kt不防java (笑
@@ -174,7 +175,7 @@ object ProxyFactory {
         }
 
         val version by info.property(proxyVersion, true)
-        if(version != proxyVersion) {
+        if(version != proxyVersion || !useCache) {
             proxyList.forEach(::fix)
             info.setProperty("version", proxyVersion)
             return

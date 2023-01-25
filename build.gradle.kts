@@ -38,7 +38,7 @@ plugins {
     java
 }
 group = "com.github.minxyzgo"
-version = "1.5"
+version = "1.8"
 
 with(java) {
     sourceCompatibility = JavaVersion.VERSION_1_8

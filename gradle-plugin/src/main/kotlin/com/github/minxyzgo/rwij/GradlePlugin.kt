@@ -13,6 +13,7 @@ open class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         rootProject = target
         Builder.libDir = rootProject.projectDir.absolutePath + "/lib"
+        ProxyFactory.useCache = false
         val libFile = File(Builder.libDir)
         if(!libFile.exists()) Builder.releaseLib(GradlePlugin::class.java.classLoader)
         Builder.loadLib()
