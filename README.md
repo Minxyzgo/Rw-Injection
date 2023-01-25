@@ -79,11 +79,17 @@ setProxy(Libs.`game-lib`, "a.a.b", "a.a.a")
 
 同时，还可以同时设置多个方法，并且带签名，一个示例是```setProxy(Libs.`game-lib`, "empty:a.a.b".with("a(IIZLjava/lang/String;)"， “b”))```
 
-还有另一个方法是`withNon(args..)`它意味着除了传入的方法都会被设置为空体，其余用法与`with(args..)`一致
+另外，如果不带`empty:`前缀，意味作用将更改为代理传入的函数
+
+还有另一个方法是`withNon(args..)`它意味着除了传入的方法都会被设置为空体/代理，其余用法与`with(args..)`一致
 
 #### deobfuscation
 `deobfuscation`传入一个`classTree`，它会重命名所有与包名冲突的类，如果该包没有这样的类则可以忽略不用
-一个示例是`deobfuscation(Libs.`game-lib`.classTree)`
+
+一个示例是
+```kotlin
+deobfuscation(Libs.`game-lib`.classTree)
+```
 
 #### initJadx
 ```kotlin
@@ -147,7 +153,7 @@ ProxyFactory.runInit {
 其中`setProxy`用法同上面一致
 
 ## 代理方法
-当你使用`injectRwLib`时，无论静态代理还是动态代理都已经写入了`core`库，对一个函数进行代理则可以用以下方法
+当你使用`injectRwLib`时，无论静态代理还是动态代理都已经导入了`core`库，对一个函数进行代理则可以用以下方法
 
 示例
 ```kotlin

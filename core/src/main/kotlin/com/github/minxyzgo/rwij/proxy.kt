@@ -146,6 +146,7 @@ object ProxyFactory {
                 is Pair<*, *> -> {
                     any as Pair<String, Array<String>>
                     val isNon = any.first.endsWith(":non")
+                    val isEmpty = any.first.startsWith("empty:")
                     val clazz = tree.defPool[any.first.removePrefix("empty:").removeSuffix(":non")]
                     val allName = any.second
                     val methodArray = buildList {
@@ -160,7 +161,7 @@ object ProxyFactory {
                         }
                     }
 
-                    setEmpty(methodArray.toTypedArray())
+                    if(isEmpty) setEmpty(methodArray.toTypedArray()) else methodArray.forEach(::setProxyMethod)
                 }
 
                 else -> throw IllegalArgumentException()
@@ -228,38 +229,45 @@ object ProxyFactory {
         clazz.methods.filter {
             it.methodInfo2.codeAttribute != null && !it.name.startsWith("__proxy__") && !it.hasAnnotation(Proxy::class.java)
         }.forEach {
-            val proceedName = "__proxy__${it.name}"
-            val proceed = CtNewMethod.copy(it, proceedName, clazz, null)
-            clazz.addMethod(proceed)
-
-            val r = "\$r"
-            val sig = "\$sig"
-            val args = "\$args"
-            val clazz0 = "\$class"
-            it.setBody(
-                """
-                    {
-                        java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${it.name}", $sig);
-                        m1.setAccessible(true);
-                        java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${it.name}", $sig);
-                        m2.setAccessible(true);
-                        ${if(it.returnType != CtClass.voidType) "return" else ""} ($r) com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(
-                            ${if(!Modifier.isStatic(it.modifiers)) "this" else "null"}, m1, m2, $args);
-                    }
-                """.trimIndent()
-            )
-
-            val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
-            val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
-            proxyAnnotation.addMemberValue("desc", StringMemberValue(it.getDesc(), constPool))
-            annotationsAttribute.addAnnotation(proxyAnnotation)
-            it.methodInfo.addAttribute(annotationsAttribute)
+            setProxyMethod(it)
         }
 
         val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
         val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
         annotationsAttribute.addAnnotation(proxyAnnotation)
         clazz.classFile.addAttribute(annotationsAttribute)
+    }
+
+    @LibRequiredApi
+    private fun setProxyMethod(method: CtMethod) {
+        val clazz = method.declaringClass
+        val constPool = clazz.classFile2.constPool
+        val proceedName = "__proxy__${method.name}"
+        val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
+        clazz.addMethod(proceed)
+
+        val r = "\$r"
+        val sig = "\$sig"
+        val args = "\$args"
+        val clazz0 = "\$class"
+        method.setBody(
+            """
+                    {
+                        java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
+                        m1.setAccessible(true);
+                        java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${method.name}", $sig);
+                        m2.setAccessible(true);
+                        ${if(method.returnType != CtClass.voidType) "return" else ""} ($r) com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(
+                            ${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, m2, $args);
+                    }
+                """.trimIndent()
+        )
+
+        val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
+        val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
+        proxyAnnotation.addMemberValue("desc", StringMemberValue(method.getDesc(), constPool))
+        annotationsAttribute.addAnnotation(proxyAnnotation)
+        method.methodInfo.addAttribute(annotationsAttribute)
     }
 
     /**
