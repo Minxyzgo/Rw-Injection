@@ -8,10 +8,14 @@ class ProxyTest {
     @Test
     fun testProxyFunction() {
         Builder.libDir = "testLib"
-        File(Builder.libDir).mkdirs()
-        //Builder.releaseLib(ProxyTest::class.java.classLoader)
+        val f = File(Builder.libDir)
+        if(!f.exists()) {
+            f.mkdirs()
+            Builder.releaseLib(ProxyTest::class.java.classLoader)
+        }
+        //
         ProxyFactory.runInit {
-            setProxy(Libs.`game-lib`.classTree, "a.a.b")
+            setProxy(Libs.`game-lib`.classTree, "a.a.b".with("close"))
         }
 
         val i = 0

@@ -18,7 +18,6 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.kotlinFunction
 
 /**
  * @param source must be [KFunction].
@@ -30,8 +29,8 @@ fun <T : Function<*>> Any.setFunction(source: T, target: T?) {
     }
 
     val method = this::class.getProxyMethodByKFunction(source as KFunction<*>)
-
-    val proxyMapField = this::class.java.getDeclaredField("__proxy_map__")
+    checkMethodIfValid(method)
+    val proxyMapField = this::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true }
     val proxyMap = ((proxyMapField.get(this) as? java.util.HashMap<*, *>) ?: java.util.HashMap<Method, Function<*>?>().also { proxyMapField.set(this, it) }) as java.util.HashMap<Method, Function<*>?>
     proxyMap[method] = target
 }
@@ -50,6 +49,12 @@ private fun KClass<*>.getProxyMethodByKFunction(source: KFunction<*>): Method {
     return this.java.getMethod(source.name, *typeParams)
 }
 
+private fun checkMethodIfValid(method: Method) {
+    if(method.getAnnotation(Proxy::class.java) == null) {
+        throw IllegalAccessException("unsupported proxy method: ${method.name}")
+    }
+}
+
 @Suppress("unused")
 object ProxyFactory {
     val proxyVersion = "0.0.4-beta"
@@ -64,7 +69,7 @@ object ProxyFactory {
         override fun invoke(self: Any?, thisMethod: Method, proceed: Method, args: Array<Any>): Any? {
             var isAgent = false
             val proxyMap0: MFMap? = (if(self != null) {
-                val agent = self::class.java.getDeclaredField("__proxy_map__")
+                val agent = self::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true }
                 agent.get(self) as? MFMap
             } else null) ?: agentMap[thisMethod.declaringClass.name]?.apply {
                 isAgent = true
@@ -214,37 +219,32 @@ object ProxyFactory {
 
     @LibRequiredApi
     private fun setProxy0(clazz: CtClass) {
-        if(!clazz.fields.any { it.name == "__proxy_map__" }) {
-            clazz.addField(
-                CtField.make(
-                    """
-                        public java.util.HashMap __proxy_map__ = null;
-                    """.trimIndent(), clazz
-                )
-            )
-        }
-
-        val constPool = clazz.classFile2.constPool
-
         clazz.methods.filter {
             it.methodInfo2.codeAttribute != null && !it.name.startsWith("__proxy__") && !it.hasAnnotation(Proxy::class.java)
         }.forEach {
             setProxyMethod(it)
         }
-
-        val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
-        val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
-        annotationsAttribute.addAnnotation(proxyAnnotation)
-        clazz.classFile.addAttribute(annotationsAttribute)
     }
 
     @LibRequiredApi
     private fun setProxyMethod(method: CtMethod) {
         val clazz = method.declaringClass
         val constPool = clazz.classFile2.constPool
+
+        if(!clazz.fields.any { it.name == "__proxy_map__" }) {
+            clazz.addField(
+                CtField.make(
+                    """
+                        private java.util.HashMap __proxy_map__ = null;
+                    """.trimIndent(), clazz
+                )
+            )
+        }
+
         val proceedName = "__proxy__${method.name}"
         val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
         clazz.addMethod(proceed)
+        proceed.modifiers = method.modifiers and Modifier.PRIVATE
 
         val r = "\$r"
         val sig = "\$sig"
@@ -268,6 +268,12 @@ object ProxyFactory {
         proxyAnnotation.addMemberValue("desc", StringMemberValue(method.getDesc(), constPool))
         annotationsAttribute.addAnnotation(proxyAnnotation)
         method.methodInfo.addAttribute(annotationsAttribute)
+
+        if(clazz.hasAnnotation(Proxy::class.java)) return
+        val annotationsAttribute0 = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
+        val proxyAnnotation0 = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
+        annotationsAttribute0.addAnnotation(proxyAnnotation0)
+        clazz.classFile.addAttribute(annotationsAttribute0)
     }
 
     /**
@@ -313,7 +319,9 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
      */
     fun <T : Function<*>> addProxy(source: T, target: T?) {
         tClass.getProxyMethodByKFunction(source as KFunction<*>)
-        proxyMap[tClass.getProxyMethodByKFunction(source as KFunction<*>).getDesc()] = target
+        proxyMap[tClass.getProxyMethodByKFunction(source as KFunction<*>).also {
+            checkMethodIfValid(it)
+        }.getDesc()] = target
     }
 
     /**
@@ -322,7 +330,9 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
      */
     fun addProxy(name: String, vararg parameterTypes: KClass<*>, target: Function<*>?) {
         val classes = parameterTypes.map(KClass<*>::java).toTypedArray()
-        val method = tClass.getProxyMethodByKFunction(tClass.java.getDeclaredMethod(name, *classes).kotlinFunction!!)
+        val method = tClass.java.getDeclaredMethod(name, *classes).also {
+            checkMethodIfValid(it)
+        }
         proxyMap[method.getDesc()] = target
     }
 
@@ -332,7 +342,9 @@ class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
      */
     fun addProxy(name: String, desc: String, target: Function<*>?) {
         val classes = getParameterTypes(desc)
-        val method = tClass.getProxyMethodByKFunction(tClass.java.getDeclaredMethod(name, *classes).kotlinFunction!!)
+        val method = tClass.java.getDeclaredMethod(name, *classes).also {
+            checkMethodIfValid(it)
+        }
         proxyMap[method.getDesc()] = target
     }
 }
