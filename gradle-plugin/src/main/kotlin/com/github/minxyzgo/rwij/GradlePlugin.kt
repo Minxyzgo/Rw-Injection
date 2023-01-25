@@ -13,14 +13,13 @@ open class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         rootProject = target
         Builder.libDir = rootProject.projectDir.absolutePath + "/lib"
-        Builder.releaseLib(GradlePlugin::class.java.classLoader)
+        val libFile = File(Builder.libDir)
+        if(!libFile.exists()) Builder.releaseLib(GradlePlugin::class.java.classLoader)
         Builder.loadLib()
         target.extensions.create("injection", InjectionExtension::class.java)
         target.task("rebuildJar") { task ->
             task.doFirst { Builder.releaseLib(GradlePlugin::class.java.classLoader) }
             task.doLast {
-                //重新释放资源 消除变更差异
-                Builder.releaseLib(GradlePlugin::class.java.classLoader)
                 val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
                 with(Builder) {
                     injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
