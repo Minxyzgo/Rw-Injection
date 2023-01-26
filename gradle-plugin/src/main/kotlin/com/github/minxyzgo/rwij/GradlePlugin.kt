@@ -19,9 +19,24 @@ open class GradlePlugin : Plugin<Project> {
         Builder.loadLib()
         target.extensions.create("injection", InjectionExtension::class.java)
         target.task("rebuildJar") { task ->
-            task.doFirst { Builder.releaseLib(GradlePlugin::class.java.classLoader) }
+            val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
+            task.doFirst {
+                Libs.values().forEach { lib ->
+                    (injectionExtension.libMapping[lib]?.let { File(it) }?.inputStream()
+                        ?:
+                    GradlePlugin::class.java.classLoader
+                        .getResourceAsStream("${lib.realName}.jar")!!).use {
+                        val jarFile = File("${Builder.libDir}/${lib.realName}.jar")
+                        if(!jarFile.exists()) {
+                            jarFile.parentFile.mkdirs()
+                            jarFile.createNewFile()
+                        }
+
+                        jarFile.writeBytes(it.readBytes())
+                    }
+                }
+            }
             task.doLast {
-                val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
                 with(Builder) {
                     injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
                     injectionExtension.proxyList.forEach { ProxyFactory.setProxy(it.first.classTree, *it.second) }
@@ -60,6 +75,8 @@ open class GradlePlugin : Plugin<Project> {
         internal val proxyList = mutableListOf<Pair<Libs, Array<out Any>>>()
         internal val deobfActions = mutableListOf<Libs>()
         internal val initJadxActions = mutableListOf<Triple<File, Libs, Array<Libs>>>()
+
+        val libMapping = mutableMapOf<Libs, String>()
 
         fun setProxy(
             lib: Libs = Libs.`game-lib`,

@@ -48,6 +48,8 @@ dependencies {
 
 如果该path已经存在，则不会自动释放rw lib
 
+**注意**： 为兼容jadx，必须每次`rebuildJar`后都会释放rw lib，这可能会覆盖原本的lib，因此，如果你有特殊的lib需要使用，应用`injection`下的`libMapping`（之后提到）
+
 ### injectRwLib
 `injectRwLib`是插件提供的一个方便的函数，它只能在`dependencies{}`内调用
 
@@ -55,13 +57,21 @@ dependencies {
 
 其中`version`是依赖的rwij版本， `useRuntimeLib`决定是否启用动态代理模式，默认为false，将在之后讲解
 
+该函数不是必须的，仅当你有代理需求时，才应使用。若你只想使用rwij的jadx或反混淆功能，则可忽略不用
+
 ### injection
 `injection`是插件提供的dsl，是静态代理模式的实现，它可以很方便地进行诸如反混淆，加载jadx和代理操作
 
-`injection`提供下列函数
+`injection`提供下列函数和字段
 
-#### setProxy
-`setProxy(lib: Libs, vararg proxyList: Any)`设置指定Lib内的某个class为代理
+#### libMapping -- 用于映射自定义lib
+```kotlin
+val libMapping: MutableMap<Libs, String>
+```
+其中第一个参数需要映射的Lib，第二个参数是需要映射的自定义lib的path
+
+#### setProxy -- 代理解决方案
+`setProxy(lib: Libs, vararg proxyList: Any)`设置指定Lib内的某个class为代理，当使用这个函数时，必须确保已经使用`injectRwLib`
 
 `proxyList`指代理列表，可以传入class name批量实现代理，下面为一个示例
 ```kotlin

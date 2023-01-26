@@ -178,22 +178,21 @@ object ProxyFactory {
         if(version != proxyVersion || !useCache) {
             proxyList.forEach(::fix)
             info.setProperty("version", proxyVersion)
-            return
-        }
+        } else {
+            val propertyName = tree.name + "_proxy_list"
+            val proxyList0 = info.getProperty(propertyName, "").split(",")
+            info.setProperty(propertyName, currentListStr)
+            info.setProperty("last_mod_time", System.currentTimeMillis().toString())
 
-        val propertyName = tree.name + "_proxy_list"
-        val proxyList0 = info.getProperty(propertyName, "").split(",")
-        info.setProperty(propertyName, currentListStr)
-        info.setProperty("last_mod_time", System.currentTimeMillis().toString())
-
-        val subtract = proxyList.filter {
-            when(it) {
-                is String -> !proxyList0.contains(it)
-                is Pair<*, *> -> !proxyList0.contains((it as Pair<String, Array<String>>).toStr())
-                else -> throw RuntimeException()
+            val subtract = proxyList.filter {
+                when(it) {
+                    is String -> !proxyList0.contains(it)
+                    is Pair<*, *> -> !proxyList0.contains((it as Pair<String, Array<String>>).toStr())
+                    else -> throw RuntimeException()
+                }
             }
+            subtract.forEach(::fix)
         }
-        subtract.forEach(::fix)
 
         info.store(fi.outputStream(), "")
     }
