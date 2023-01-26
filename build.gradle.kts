@@ -34,7 +34,6 @@ repositories {
 plugins {
     id("maven-publish")
     kotlin("jvm") version "1.7.0"
-    kotlin("kapt") version "1.7.0"
     java
 }
 group = "com.github.minxyzgo"

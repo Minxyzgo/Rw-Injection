@@ -66,7 +66,7 @@ object ProxyFactory {
     @LibRequiredApi
     @JvmField
     @Suppress("UNCHECKED_CAST")
-    internal val handler = object : MethodHandler {
+    val handler = object : MethodHandler {
         override fun invoke(self: Any?, thisMethod: Method, proceed: Method, args: Array<Any>): Any? {
             var isAgent = false
             val proxyMap0: MFMap? = (if(self != null) {
@@ -198,13 +198,13 @@ object ProxyFactory {
     }
 
     /**
-     * 给定一个列表，表示该字符串表示的类所有在列表中的方法设为空体
+     * 给定一个列表，表示该字符串表示的类所有在列表中的方法设为空体/代理
      */
     //context(ProxyFactory)
     fun String.with(vararg list: String) = this to list
 
     /**
-     * 给定一个列表，表示该字符串表示的类所有除了在列表中的方法设为空体
+     * 给定一个列表，表示该字符串表示的类所有除了在列表中的方法设为空体/代理
      */
     //context(ProxyFactory)
     fun String.withNon(vararg list: String) = "$this:non" to list
