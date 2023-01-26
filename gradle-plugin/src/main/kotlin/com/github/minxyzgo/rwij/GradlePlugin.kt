@@ -15,8 +15,7 @@ open class GradlePlugin : Plugin<Project> {
         Builder.libDir = rootProject.projectDir.absolutePath + "/lib"
         Builder.useCache = false
         Builder.releaseLibAction = {}
-        releaseLib()
-        Builder.loadLib()
+
         target.extensions.create("injection", InjectionExtension::class.java)
         target.task("rebuildJar") { task ->
             task.doLast {
@@ -28,6 +27,11 @@ open class GradlePlugin : Plugin<Project> {
                     saveLib()
                 }
             }
+        }
+
+        target.afterEvaluate {
+            releaseLib()
+            Builder.loadLib()
         }
     }
 
