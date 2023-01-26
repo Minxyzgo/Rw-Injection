@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.minxyzgo.rwij.util.ClassTree
 import com.github.minxyzgo.rwij.util.RenameFactory
 import javassist.ClassPool
-import javassist.LoaderClassPath
 import javassist.bytecode.Descriptor
 import java.io.File
 import java.io.FileNotFoundException
@@ -56,6 +55,7 @@ enum class Libs {
         private set
 
     lateinit var lib: File
+    lateinit var cp: Any // ClassPath
 
     @LibRequiredApi
     val classTree by lazy {
@@ -71,7 +71,7 @@ enum class Libs {
         isLoaded = true
         lib = File("${libFile.absolutePath}/$realName.jar")
         if(!lib.exists()) throw FileNotFoundException("cannot find lib: $name")
-        defClassPool.appendClassPath(lib.absolutePath)
+        cp = defClassPool.appendClassPath(lib.absolutePath)
         if(this in includes) classTree.initByJarFile(lib)
     }
 
@@ -130,7 +130,7 @@ enum class Libs {
         @JvmStatic
         @LibRequiredApi
         val defClassPool = ClassPool().apply {
-            appendClassPath(LoaderClassPath(ClassLoader.getSystemClassLoader()))
+            appendSystemPath()
         }
 
         /**

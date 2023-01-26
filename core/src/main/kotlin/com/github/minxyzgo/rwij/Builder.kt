@@ -13,6 +13,8 @@ import javax.lang.model.SourceVersion
 @LibRequiredApi
 object Builder {
     var libDir = "lib"
+    var useCache = true
+    var releaseLibAction: () -> Unit = { releaseLib() }
 
     /**
      * 保存现有已修改的lib到[libDir]
@@ -26,12 +28,16 @@ object Builder {
 
     /**
      * 根据[libDir]加载lib，若[libDir]不存在，则返回[FileNotFoundException]
+     *
+     * 如果[useCache]为false，则调用[releaseLibAction]释放资源
      */
     fun loadLib() {
         val libFile = File(libDir)
         if(!libFile.exists()) {
             throw FileNotFoundException("libFile: $libDir is not exists")
         }
+
+        if(!useCache) releaseLibAction()
 
         Libs.values().forEach {
             if(!it.isLoaded) it.load(libFile)
@@ -41,7 +47,7 @@ object Builder {
     /**
      * 释放包内的lib资源到[libDir]
      */
-    fun releaseLib(cl: ClassLoader = ClassLoader.getSystemClassLoader()) {
+    fun releaseLib(cl: ClassLoader = Thread.currentThread().contextClassLoader) {
         Libs.values().forEach { lib ->
             cl.getResourceAsStream("${lib.realName}.jar")!!.use {
                 val jarFile = File("$libDir/${lib.realName}.jar")
@@ -70,6 +76,7 @@ object Builder {
             classes.forEach {
                 zip.putNextEntry(ZipEntry(Descriptor.toJvmName(it) + ".class"))
                 zip.write(it.toBytecode())
+                it.defrost()
             }
         }
 

@@ -13,31 +13,15 @@ open class GradlePlugin : Plugin<Project> {
     override fun apply(target: Project) {
         rootProject = target
         Builder.libDir = rootProject.projectDir.absolutePath + "/lib"
-        ProxyFactory.useCache = false
-        val libFile = File(Builder.libDir)
-        if(!libFile.exists()) Builder.releaseLib(GradlePlugin::class.java.classLoader)
+        Builder.useCache = false
+        Builder.releaseLibAction = {}
+        releaseLib()
         Builder.loadLib()
         target.extensions.create("injection", InjectionExtension::class.java)
         target.task("rebuildJar") { task ->
-            val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
-            task.doFirst {
-                Libs.values().forEach { lib ->
-                    (injectionExtension.libMapping[lib]?.let { File(it) }?.inputStream()
-                        ?:
-                    GradlePlugin::class.java.classLoader
-                        .getResourceAsStream("${lib.realName}.jar")!!).use {
-                        val jarFile = File("${Builder.libDir}/${lib.realName}.jar")
-                        if(!jarFile.exists()) {
-                            jarFile.parentFile.mkdirs()
-                            jarFile.createNewFile()
-                        }
-
-                        jarFile.writeBytes(it.readBytes())
-                    }
-                }
-            }
             task.doLast {
                 with(Builder) {
+                    val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
                     injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
                     injectionExtension.proxyList.forEach { ProxyFactory.setProxy(it.first.classTree, *it.second) }
                     injectionExtension.deobfActions.forEach { deobfuscation(it.classTree) }
@@ -69,6 +53,23 @@ open class GradlePlugin : Plugin<Project> {
         }
 
         private fun DependencyHandler.implementation(dependencyNotation: Any) = add("implementation", dependencyNotation)
+        private fun releaseLib() {
+            val injectionExtension = rootProject.extensions.getByType(InjectionExtension::class.java)
+            Libs.values().forEach { lib ->
+                (injectionExtension.libMapping[lib]?.let { File(it) }?.inputStream()
+                    ?:
+                    GradlePlugin::class.java.classLoader
+                        .getResourceAsStream("${lib.realName}.jar")!!).use {
+                    val jarFile = File("${Builder.libDir}/${lib.realName}.jar")
+                    if(!jarFile.exists()) {
+                        jarFile.parentFile.mkdirs()
+                        jarFile.createNewFile()
+                    }
+
+                    jarFile.writeBytes(it.readBytes())
+                }
+            }
+        }
     }
 
     open class InjectionExtension {

@@ -1,5 +1,6 @@
 package com.github.minxyzgo.rwij
 
+import com.github.minxyzgo.rwij.Builder.useCache
 import com.github.minxyzgo.rwij.util.ClassTree
 import com.github.minxyzgo.rwij.util.getDesc
 import com.github.minxyzgo.rwij.util.getParameterTypes
@@ -58,7 +59,6 @@ private fun checkMethodIfValid(method: Method) {
 @Suppress("unused")
 object ProxyFactory {
     val proxyVersion = "0.0.4-beta"
-    var useCache = true
 
     /**
      * 防kt不防java (笑
@@ -250,6 +250,7 @@ object ProxyFactory {
         val sig = "\$sig"
         val args = "\$args"
         val clazz0 = "\$class"
+
         method.setBody(
             """
                     {

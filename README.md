@@ -44,11 +44,9 @@ dependencies {
 
 ## 插件的使用
 
-当调用`apply<com.github.minxyzgo.rwij.GradlePlugin>()`时，插件开始加载，此时插件会释放rw lib到`projectDir/lib/`下
+当调用`apply<com.github.minxyzgo.rwij.GradlePlugin>()`时，插件开始加载
 
-如果该path已经存在，则不会自动释放rw lib
-
-**注意**： 为兼容jadx，必须每次`rebuildJar`后都会释放rw lib，这可能会覆盖原本的lib，因此，如果你有特殊的lib需要使用，应用`injection`下的`libMapping`（之后提到）
+**注意**： 为兼容jadx，必须每次初始化项目后都会释放rw lib，这可能会覆盖原本的lib，因此，如果你有特殊的lib需要使用，应用`injection`下的`libMapping`（之后提到）
 
 ### injectRwLib
 `injectRwLib`是插件提供的一个方便的函数，它只能在`dependencies{}`内调用
