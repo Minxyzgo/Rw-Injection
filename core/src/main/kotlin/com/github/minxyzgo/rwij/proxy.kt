@@ -58,7 +58,7 @@ private fun checkMethodIfValid(method: Method) {
 
 @Suppress("unused")
 object ProxyFactory {
-    val proxyVersion = "0.0.4-beta"
+    val proxyVersion = "0.0.5-beta"
 
     /**
      * 防kt不防java (笑
@@ -67,7 +67,7 @@ object ProxyFactory {
     @JvmField
     @Suppress("UNCHECKED_CAST")
     val handler = object : MethodHandler {
-        override fun invoke(self: Any?, thisMethod: Method, proceed: Method, args: Array<Any>): Any? {
+        override fun invoke(self: Any?, thisMethod: Method, proceed: Method?, args: Array<Any>): Any? {
             var isAgent = false
             val proxyMap0: MFMap? = (if(self != null) {
                 val agent = self::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true }
@@ -92,7 +92,7 @@ object ProxyFactory {
                     kf.call(*args)
                 }
             } else {
-                proceed.invoke(self, *args)
+                proceed?.invoke(self, *args)
             }
         }
     }
@@ -160,8 +160,10 @@ object ProxyFactory {
                             addAll(clazz.declaredMethods.filter { !allName.contains(it.name) && !allName.contains(it.longName) })
                         } else {
                             allName.forEach { item ->
-                                if(item.contains("("))
-                                    add(clazz.declaredMethods.first { it.name + Descriptor.toString(it.signature) == item })
+                                if(item.contains("(")) {
+                                    add(clazz.declaredMethods.firstOrNull { it.name + Descriptor.getParamDescriptor(it.signature) == item } ?: throw IllegalArgumentException("Couldn't find method: $item in class: ${clazz.name}. Did you enter the correct name?"))
+                                }
+
                                 else addAll(clazz.declaredMethods.filter { it.name == item })
                             }
                         }
@@ -235,31 +237,40 @@ object ProxyFactory {
             clazz.addField(
                 CtField.make(
                     """
-                        private java.util.HashMap __proxy_map__ = null;
+                        protected java.util.HashMap __proxy_map__ = null;
                     """.trimIndent(), clazz
                 )
             )
         }
 
+        val isNative = Modifier.isNative(method.modifiers)
+
         val proceedName = "__proxy__${method.name}"
-        val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
-        clazz.addMethod(proceed)
-        proceed.modifiers = method.modifiers and Modifier.PRIVATE
+        if(!isNative) {
+            val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
+            proceed.modifiers = Modifier.setProtected(method.modifiers)
+            clazz.addMethod(proceed)
+        }
 
         val r = "\$r"
         val sig = "\$sig"
         val args = "\$args"
         val clazz0 = "\$class"
 
+        val proceedCode = """
+            java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${method.name}", $sig);
+            m2.setAccessible(true);
+        """.trimIndent()
+
+        method.modifiers = method.modifiers and Modifier.NATIVE.inv()
         method.setBody(
             """
                     {
                         java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
                         m1.setAccessible(true);
-                        java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${method.name}", $sig);
-                        m2.setAccessible(true);
+                        ${if(!isNative) proceedCode else ""}
                         ${if(method.returnType != CtClass.voidType) "return" else ""} ($r) com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(
-                            ${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, m2, $args);
+                            ${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, ${if(isNative) null else "m2"}, $args);
                     }
                 """.trimIndent()
         )
@@ -294,7 +305,7 @@ object ProxyFactory {
         val allLibFiles = Libs.values().map(Libs::lib)
 
         allLibFiles.forEach {
-            addURL.invoke(ClassLoader.getSystemClassLoader(), it.toURI().toURL())
+            addURL.invoke(Thread.currentThread().contextClassLoader, it.toURI().toURL())
         }
     }
 
@@ -372,7 +383,7 @@ interface MethodHandler {
      */
     @Throws(Throwable::class)
     operator fun invoke(
-        self: Any?, thisMethod: Method, proceed: Method,
+        self: Any?, thisMethod: Method, proceed: Method?,
         args: Array<Any>
     ): Any?
 }

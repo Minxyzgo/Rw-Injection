@@ -51,7 +51,7 @@ project(":core") {
     dependencies {
         compileOnly("org.javassist:javassist:3.29.2-GA")
         compileOnly("com.fasterxml.jackson.core:jackson-databind:2.13.4")
-        testCompileOnly(fileTree("dir" to "$rootDir/lib", "include" to listOf("*.jar")))
+        testCompileOnly(fileTree("dir" to "$rootDir/lib", "include" to listOf("game-lib.jar")))
         testImplementation("org.javassist:javassist:3.29.2-GA")
         testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
         api(kotlin("reflect"))
