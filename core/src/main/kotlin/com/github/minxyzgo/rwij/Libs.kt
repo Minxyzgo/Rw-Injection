@@ -66,10 +66,9 @@ enum class Libs {
     }
 
     @LibRequiredApi
-    fun load(libFile: File) {
-        if(isLoaded) throw RuntimeException("lib: $name has been loaded.")
+    fun load(libPath: String) {
         isLoaded = true
-        lib = File("${libFile.absolutePath}/$realName.jar")
+        lib = File("${libPath}/$realName.jar")
         if(!lib.exists()) throw FileNotFoundException("cannot find lib: $name")
         cp = defClassPool.appendClassPath(lib.absolutePath)
         if(this in includes) classTree.initByJarFile(lib)
@@ -129,8 +128,10 @@ enum class Libs {
     companion object {
         @JvmStatic
         @LibRequiredApi
-        val defClassPool = ClassPool().apply {
-            appendSystemPath()
+        val defClassPool by lazy {
+            ClassPool().apply {
+                appendSystemPath()
+            }
         }
 
         /**

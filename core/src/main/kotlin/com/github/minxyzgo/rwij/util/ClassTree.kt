@@ -9,13 +9,13 @@ import java.util.zip.ZipFile
 /**
  * 以流模式实现的ClassTree, 便于获取任意jar包内的class等信息
  */
-@Suppress("unused")
+@Suppress("unused", "MemberVisibilityCanBePrivate")
 @LibRequiredApi
 class ClassTree(
     val defPool: ClassPool,
 ) {
     //longName缓存，防止包名更改无法找到类
-    private var _longNameCache_ = ""
+    private var longNameCache = ""
     /**
      * 该包下所有的子级包
      */
@@ -147,7 +147,7 @@ class ClassTree(
                 next = tree
                 tree.classesName.toSet().forEach {
                     val path = "${tree.longName}.$it"
-                    action(defPool.getOrNull(path) ?: defPool["${tree._longNameCache_}.$it"], tree)
+                    action(defPool.getOrNull(path) ?: defPool["${tree.longNameCache}.$it"], tree)
                 }
                 each()
             }
@@ -178,13 +178,13 @@ class ClassTree(
      * 当tree变更完毕时调用此函数刷新tree结构
      */
     fun flushAllPackages() {
-        allPackageFromRoot.toMap().forEach { t, u ->
+        allPackageFromRoot.toMap().forEach { (t, u) ->
             if(t != u.longName) {
                 allPackageFromRoot.remove(t)
                 allPackageFromRoot[u.longName] = u
             }
 
-            u._longNameCache_ = u.longName
+            u.longNameCache = u.longName
         }
     }
 
@@ -197,7 +197,7 @@ class ClassTree(
                 this.name = str
                 this@apply.root = this@ClassTree.root
                 this.longName = fullName
-                _longNameCache_ = fullName
+                longNameCache = fullName
             }
 
             allPackageFromRoot[fullName] = tree

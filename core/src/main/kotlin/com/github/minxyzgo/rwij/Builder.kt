@@ -10,7 +10,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import javax.lang.model.SourceVersion
 
-@LibRequiredApi
+@Suppress("MemberVisibilityCanBePrivate")
 object Builder {
     var libDir = "lib"
     var useCache = true
@@ -19,6 +19,7 @@ object Builder {
     /**
      * 保存现有已修改的lib到[libDir]
      */
+    @LibRequiredApi
     fun saveLib() {
          Libs.includes.forEach { v ->
              val jarFile = File("$libDir/${v.realName}.jar")
@@ -31,6 +32,7 @@ object Builder {
      *
      * 如果[useCache]为false，则调用[releaseLibAction]释放资源
      */
+    @LibRequiredApi
     fun loadLib() {
         val libFile = File(libDir)
         if(!libFile.exists()) {
@@ -40,7 +42,7 @@ object Builder {
         if(!useCache) releaseLibAction()
 
         Libs.values().forEach {
-            if(!it.isLoaded) it.load(libFile)
+            if(!it.isLoaded) it.load(libDir)
         }
     }
 
@@ -89,6 +91,7 @@ object Builder {
      * 反混淆类，对于所给的类列表和包列表， 将进行以下操作
      * 重命名与包名冲突的类
      */
+    @LibRequiredApi
     fun deobfuscation(
         classTree: ClassTree,
     ) {
@@ -126,6 +129,7 @@ fun CtClass.normalTypeInitStatement(): String? = when(this) {
 }
 
 @LibRequiredApi
+@Suppress("unused")
 fun CtClass.transformClass(): Class<*>  {
     return when(name) {
         "int" -> Int::class.java

@@ -1,4 +1,12 @@
-# Rw-Injection - 适用于Rw的注入库
+<div align="center">
+<h1> Rw-Injection - 适用于Rw的注入库 </h1>
+
+----
+[![](https://jitpack.io/v/minxyzgo/rw-injection.svg)](https://jitpack.io/#minxyzgo/rw-injection)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.8.20-blue.svg?logo=kotlin)](http://kotlinlang.org)
+
+</div>
+
 ## 支持的功能：
 * 使用一套基于[javassist](https://github.com/jboss-javassist/javassist)的代理服务，支持静态/动态代理
 

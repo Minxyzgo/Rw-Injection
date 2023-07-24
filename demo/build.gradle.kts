@@ -21,6 +21,10 @@
 //}
 //
 //dependencies {
+//    implementation(fileTree("dir" to "$projectDir/lib", "include" to listOf("*.jar")))
+//}
+//
+//dependencies {
 //    //injectRwCore("1.4")
 //    injectRwLib("1.4")
 //}

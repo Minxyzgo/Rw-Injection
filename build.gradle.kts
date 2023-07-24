@@ -33,11 +33,12 @@ repositories {
 
 plugins {
     id("maven-publish")
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.8.20"
     java
 }
+
 group = "com.github.minxyzgo"
-version = "1.9"
+version = "1.9.4"
 
 with(java) {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -95,26 +96,5 @@ fun Project.publish() {
                 from(components.getByName("java"))
             }
         }
-
-//        repositories {
-//            maven {
-//                mavenLocal()
-//                url = uri(rootDir.absolutePath + "/repo")
-//            }
-//        }
     }
 }
-
-//
-//task("start", Jar::class) {
-//    dependsOn(tasks.build)
-//    from("$buildDir/classes/java/main/") {
-//        this.include { true }
-//    }
-////    from("game-lib/") {
-////        this.include { true }
-////    }
-//    archiveFileName.set("game-lib.jar")
-//    val rwPath = "G:\\steam\\steamapps\\common\\Rusted Warfare\\"
-//    archiveFile.get().asFile.copyTo(File("$rwPath\\game-lib.jar"), true)
-//}

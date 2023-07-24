@@ -7,6 +7,7 @@ import javassist.CtField
 import javassist.CtMethod
 
 @LibRequiredApi
+@Suppress("MemberVisibilityCanBePrivate")
 class RenameFactory(
     val root: ClassTree,
     val otherTree: Array<ClassTree> = emptyArray()

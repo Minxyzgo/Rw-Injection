@@ -40,10 +40,10 @@ internal fun numOfParameters(desc: String): Int {
 }
 
 internal fun toClass(
-    desc: String, i_: Int,
+    desc: String, i0: Int,
     args: Array<Class<*>?>, n: Int
 ): Int {
-    var i = i_
+    var i = i0
     var i2: Int
     var name: String
     var arrayDim = 0

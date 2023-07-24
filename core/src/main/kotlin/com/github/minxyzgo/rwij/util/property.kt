@@ -4,7 +4,7 @@ import java.util.*
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-fun Properties.property(defValue: String = "", replace: Boolean = false,) = GetProperty(this, defValue, replace)
+fun Properties.property(defValue: String = "", replace: Boolean = false) = GetProperty(this, defValue, replace)
 
 class PropertyProvider(
     private val key: String,

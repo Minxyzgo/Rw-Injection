@@ -10,78 +10,113 @@ import java.io.File
 
 @OptIn(LibRequiredApi::class)
 open class GradlePlugin : Plugin<Project> {
+
     override fun apply(target: Project) {
         rootProject = target
-        Builder.libDir = rootProject.projectDir.absolutePath + "/lib"
+        Builder.libDir = target.buildDir.absolutePath + "/generate/lib"
         Builder.useCache = false
-        Builder.releaseLibAction = {}
 
-        target.extensions.create("injection", InjectionExtension::class.java)
+        target.extensions.create("injectionMultiplatform", InjectionMultiplatformExtension::class.java)
+
         target.task("rebuildJar") { task ->
             task.doLast {
                 with(Builder) {
-                    val injectionExtension = target.extensions.getByType(InjectionExtension::class.java)
-                    injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
-                    injectionExtension.proxyList.forEach { ProxyFactory.setProxy(it.first.classTree, *it.second) }
-                    injectionExtension.deobfActions.forEach { deobfuscation(it.classTree) }
-                    saveLib()
+                    extension.multiplatformTargets.forEach { (target, injectionExtension) ->
+                        if(target == MultiplatformTarget.Android) {
+                            // for android - only need to load game-lib
+                            Thread.currentThread().contextClassLoader
+                                .getResourceAsStream("android-game-lib.jar")!!.use {
+                                    val jarFile = File("${libDir}/android-game-lib.jar")
+                                    if(!jarFile.exists()) {
+                                        jarFile.parentFile.mkdirs()
+                                        jarFile.createNewFile()
+                                    }
+
+                                    jarFile.writeBytes(it.readBytes())
+                                }
+                            Libs.`game-lib`.realName = "android-game-lib"
+                            Libs.`game-lib`.load(libDir)
+                        } else if(target == MultiplatformTarget.Jvm) {
+                            Libs.`game-lib`.realName = "game-lib"
+                            loadLib()
+                        }
+
+                        injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
+                        injectionExtension.proxyList.forEach { ProxyFactory.setProxy(it.first.classTree, *it.second) }
+                        injectionExtension.action?.invoke()
+                        injectionExtension.deobfActions.forEach { deobfuscation(it.classTree) }
+                        // for android, it will only save android-game-lib
+                        if(target == MultiplatformTarget.Android) {
+                            val jarFile = File("$libDir/android-game-lib.jar")
+                            buildJar(jarFile, Libs.`game-lib`.classTree.allClasses)
+                        } else if(target == MultiplatformTarget.Jvm) {
+                            saveLib()
+                        }
+
+                        saveLib()
+                    }
+
                 }
             }
         }
 
         target.afterEvaluate {
-            releaseLib()
-            Builder.loadLib()
+            extension = it.extensions.getByType(InjectionMultiplatformExtension::class.java)
         }
     }
 
     companion object {
         lateinit var rootProject: Project
+        lateinit var extension: InjectionMultiplatformExtension
         @JvmOverloads
         fun DependencyHandler.injectRwLib(
             version: String,
             useRuntimeLib: Boolean = false,
         ): Unit = with(rootProject){
-            implementation("com.github.minxyzgo.rw-injection:core:$version")
+            api("com.github.minxyzgo.rw-injection:core:$version")
             if(useRuntimeLib) {
-                implementation("org.javassist:javassist:3.29.2-GA")
-                implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+                api("org.javassist:javassist:3.29.2-GA")
+                api("com.fasterxml.jackson.core:jackson-databind:2.13.4")
                 val sourceSets = extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
                 val main = sourceSets.named("main", SourceSet::class.java)
                 main.get().resources {
                     it.srcDir(Builder.libDir)
                 }
             } else {
-                implementation(fileTree(mapOf("dir" to "$projectDir/lib", "include" to "*.jar")))
-            }
-        }
-
-        private fun DependencyHandler.implementation(dependencyNotation: Any) = add("implementation", dependencyNotation)
-        private fun releaseLib() {
-            val injectionExtension = rootProject.extensions.getByType(InjectionExtension::class.java)
-            Libs.values().forEach { lib ->
-                (injectionExtension.libMapping[lib]?.let { File(it) }?.inputStream()
-                    ?:
-                    GradlePlugin::class.java.classLoader
-                        .getResourceAsStream("${lib.realName}.jar")!!).use {
-                    val jarFile = File("${Builder.libDir}/${lib.realName}.jar")
-                    if(!jarFile.exists()) {
-                        jarFile.parentFile.mkdirs()
-                        jarFile.createNewFile()
-                    }
-
-                    jarFile.writeBytes(it.readBytes())
+                extension.multiplatformTargets.forEach { (_, u) ->
+                    val t = u.target
+                    add("${t}api", fileTree(mapOf("dir" to Builder.libDir, "include" to "${if(t.isBlank()) "" else t.removeSuffix("Main") + "-"}**.jar")))
                 }
             }
         }
+
+        private fun DependencyHandler.api(dependencyNotation: Any) = add(if(extension.enable) "commonMainApi" else "api", dependencyNotation)
     }
 
-    open class InjectionExtension {
+    open class InjectionMultiplatformExtension {
+        internal val multiplatformTargets = mutableMapOf<MultiplatformTarget, InjectionExtension>()
+        var enable: Boolean = false
+
+        fun android(configuration: InjectionExtension.() -> Unit) {
+            configuration(multiplatformTargets.getOrPut(MultiplatformTarget.Android) { InjectionExtension(MultiplatformTarget.Android) })
+        }
+
+        fun jvm(configuration: InjectionExtension.() -> Unit) {
+            configuration(multiplatformTargets.getOrPut(MultiplatformTarget.Jvm) { InjectionExtension(MultiplatformTarget.Jvm) })
+        }
+    }
+
+    enum class MultiplatformTarget {
+        Jvm, Android // maybe we will support ios, who knows?
+    }
+
+    class InjectionExtension(target0: MultiplatformTarget = MultiplatformTarget.Jvm) {
         internal val proxyList = mutableListOf<Pair<Libs, Array<out Any>>>()
         internal val deobfActions = mutableListOf<Libs>()
         internal val initJadxActions = mutableListOf<Triple<File, Libs, Array<Libs>>>()
+        internal var action: (() -> Unit)? = null
 
-        val libMapping = mutableMapOf<Libs, String>()
+        var target: String = if(target0 == MultiplatformTarget.Jvm) "" else "androidMain"
 
         fun setProxy(
             lib: Libs = Libs.`game-lib`,
@@ -103,6 +138,8 @@ open class GradlePlugin : Plugin<Project> {
         ) {
             initJadxActions.add(Triple(File("$dir/$fileName.jadx"), lib, otherTree))
         }
+
+        fun action(action: () -> Unit) { this.action = action }
     }
 }
 
