@@ -34,10 +34,8 @@ open class GradlePlugin : Plugin<Project> {
 
                                     jarFile.writeBytes(it.readBytes())
                                 }
-                            Libs.`game-lib`.realName = "android-game-lib"
-                            Libs.`game-lib`.load(libDir)
+                            Libs.`game-lib`.load(libDir, "android-game-lib")
                         } else if(target == MultiplatformTarget.Jvm) {
-                            Libs.`game-lib`.realName = "game-lib"
                             loadLib()
                         }
 
@@ -52,10 +50,7 @@ open class GradlePlugin : Plugin<Project> {
                         } else if(target == MultiplatformTarget.Jvm) {
                             saveLib()
                         }
-
-                        saveLib()
                     }
-
                 }
             }
         }

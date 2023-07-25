@@ -64,9 +64,9 @@ enum class Libs {
     lateinit var classTree: ClassTree
 
     @LibRequiredApi
-    fun load(libPath: String) {
+    fun load(libPath: String, libName: String = realName) {
         isLoaded = true
-        lib = File("${libPath}/$realName.jar")
+        lib = File("${libPath}/$libName.jar")
         if(!lib.exists()) throw FileNotFoundException("cannot find lib: $name")
         cp?.let { defClassPool.removeClassPath(cp as ClassPath) }
         cp = defClassPool.appendClassPath(lib.absolutePath)
