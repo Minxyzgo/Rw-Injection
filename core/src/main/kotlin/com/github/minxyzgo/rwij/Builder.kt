@@ -14,7 +14,7 @@ import javax.lang.model.SourceVersion
 object Builder {
     var libDir = "lib"
     var useCache = true
-    var releaseLibAction: () -> Unit = { releaseLib() }
+    var releaseLibAction: () -> Unit = { releaseLibs() }
 
     /**
      * 保存现有已修改的lib到[libDir]
@@ -49,17 +49,22 @@ object Builder {
     /**
      * 释放包内的lib资源到[libDir]
      */
-    fun releaseLib(cl: ClassLoader = Thread.currentThread().contextClassLoader) {
-        Libs.values().forEach { lib ->
-            cl.getResourceAsStream("${lib.realName}.jar")!!.use {
-                val jarFile = File("$libDir/${lib.realName}.jar")
-                if(!jarFile.exists()) {
-                    jarFile.parentFile.mkdirs()
-                    jarFile.createNewFile()
-                }
+    fun releaseLibs(cl: ClassLoader = Thread.currentThread().contextClassLoader) {
+        Libs.values().forEach { releaseLib(cl, it) }
+    }
 
-                jarFile.writeBytes(it.readBytes())
+    /**
+     * 释放包内指定的lib资源到[libDir]
+     */
+    fun releaseLib(cl: ClassLoader = Thread.currentThread().contextClassLoader, lib: Libs, libName: String = lib.realName) {
+        cl.getResourceAsStream("${libName}.jar")!!.use {
+            val jarFile = File("$libDir/${libName}.jar")
+            if(!jarFile.exists()) {
+                jarFile.parentFile.mkdirs()
+                jarFile.createNewFile()
             }
+
+            jarFile.writeBytes(it.readBytes())
         }
     }
 

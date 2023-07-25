@@ -12,7 +12,7 @@ class ProxyTest {
         val f = File(Builder.libDir)
         if(!f.exists()) {
             f.mkdirs()
-            Builder.releaseLib(ProxyTest::class.java.classLoader)
+            Builder.releaseLibs(ProxyTest::class.java.classLoader)
         }
         //
         ProxyFactory.runInit {
@@ -48,7 +48,7 @@ class ProxyTest {
         val f = File(Builder.libDir)
         if(!f.exists()) {
             f.mkdirs()
-            Builder.releaseLib(ProxyTest::class.java.classLoader)
+            Builder.releaseLibs(ProxyTest::class.java.classLoader)
         }
 
 

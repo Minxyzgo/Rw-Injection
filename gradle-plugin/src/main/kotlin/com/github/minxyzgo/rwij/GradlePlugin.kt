@@ -24,17 +24,11 @@ open class GradlePlugin : Plugin<Project> {
                     extension.multiplatformTargets.forEach { (target, injectionExtension) ->
                         if(target == MultiplatformTarget.Android) {
                             // for android - only need to load game-lib
-                            Thread.currentThread().contextClassLoader
-                                .getResourceAsStream("android-game-lib.jar")!!.use {
-                                    val jarFile = File("${libDir}/android-game-lib.jar")
-                                    if(!jarFile.exists()) {
-                                        jarFile.parentFile.mkdirs()
-                                        jarFile.createNewFile()
-                                    }
-
-                                    jarFile.writeBytes(it.readBytes())
-                                }
+                            releaseLib(lib = Libs.`game-lib`, libName = "android-game-lib")
+                            releaseLib(lib = Libs.android)
                             Libs.`game-lib`.load(libDir, "android-game-lib")
+                            // for android, Changing android .jar is useless
+                            Libs.android.load(libDir)
                         } else if(target == MultiplatformTarget.Jvm) {
                             loadLib()
                         }
@@ -47,6 +41,7 @@ open class GradlePlugin : Plugin<Project> {
                         if(target == MultiplatformTarget.Android) {
                             val jarFile = File("$libDir/android-game-lib.jar")
                             buildJar(jarFile, Libs.`game-lib`.classTree.allClasses)
+                            // saving android.jar is useless
                         } else if(target == MultiplatformTarget.Jvm) {
                             saveLib()
                         }
