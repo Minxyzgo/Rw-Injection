@@ -81,7 +81,7 @@ open class GradlePlugin : Plugin<Project> {
             } else {
                 extension.multiplatformTargets.forEach { (_, u) ->
                     val t = u.target
-                    add("${t}Api", fileTree(mapOf("dir" to Builder.libDir, "include" to "${if(t.isBlank()) "" else t.removeSuffix("Main") + "-"}**.jar")))
+                    add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(mapOf("dir" to Builder.libDir, "include" to "${if(t.isBlank()) "" else t.removeSuffix("Main") + "-"}**.jar")))
                 }
             }
         }
