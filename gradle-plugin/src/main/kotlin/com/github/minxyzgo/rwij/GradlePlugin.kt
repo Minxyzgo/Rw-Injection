@@ -24,9 +24,9 @@ open class GradlePlugin : Plugin<Project> {
                     extension.multiplatformTargets.forEach { (target, injectionExtension) ->
                         if(target == MultiplatformTarget.Android) {
                             // for android - only need to load game-lib
-                            releaseLib(lib = Libs.`game-lib`, libName = "android-game-lib")
+                            releaseLib(lib = Libs.`android-game-lib`)
                             releaseLib(lib = Libs.android)
-                            Libs.`game-lib`.load(libDir, "android-game-lib")
+                            Libs.`android-game-lib`.load(libDir)
                             // for android, Changing android .jar is useless
                             Libs.android.load(libDir)
                         } else if(target == MultiplatformTarget.Jvm) {
@@ -40,7 +40,7 @@ open class GradlePlugin : Plugin<Project> {
                         // for android, it will only save android-game-lib
                         if(target == MultiplatformTarget.Android) {
                             val jarFile = File("$libDir/android-game-lib.jar")
-                            buildJar(jarFile, Libs.`game-lib`.classTree.allClasses)
+                            buildJar(jarFile, Libs.`android-game-lib`.classTree.allClasses)
                             // saving android.jar is useless
                         } else if(target == MultiplatformTarget.Jvm) {
                             saveLib()
@@ -69,10 +69,13 @@ open class GradlePlugin : Plugin<Project> {
             if(useRuntimeLib) {
                 api("org.javassist:javassist:3.29.2-GA")
                 api("com.fasterxml.jackson.core:jackson-databind:2.13.4")
-                val sourceSets = extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
-                val main = sourceSets.named("main", SourceSet::class.java)
-                main.get().resources {
-                    it.srcDir(Builder.libDir)
+
+                if(!extension.enable && extension.multiplatformTargets[MultiplatformTarget.Jvm] != null) {
+                    val sourceSets = extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
+                    val main = sourceSets.named("main", SourceSet::class.java)
+                    main.get().resources {
+                        it.srcDir(Builder.libDir)
+                    }
                 }
 
                 extension.multiplatformTargets[MultiplatformTarget.Jvm]?.let(::compileOnlyMultiplatform)

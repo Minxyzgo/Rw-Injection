@@ -14,7 +14,7 @@ import javax.lang.model.SourceVersion
 object Builder {
     var libDir = "lib"
     var useCache = true
-    var releaseLibAction: () -> Unit = { releaseLibs() }
+    var releaseLibActions = mutableMapOf<Libs, (Libs, ClassLoader) -> Unit>()
 
     /**
      * 保存现有已修改的lib到[libDir]
@@ -39,7 +39,7 @@ object Builder {
             throw FileNotFoundException("libFile: $libDir is not exists")
         }
 
-        if(!useCache) releaseLibAction()
+        if(!useCache) releaseLibs()
 
         Libs.values().forEach {
             it.load(libDir)
@@ -57,7 +57,7 @@ object Builder {
      * 释放包内指定的lib资源到[libDir]
      */
     fun releaseLib(cl: ClassLoader = Thread.currentThread().contextClassLoader, lib: Libs, libName: String = lib.realName) {
-        cl.getResourceAsStream("${libName}.jar")!!.use {
+        releaseLibActions[lib]?.let { it(lib, cl) } ?: cl.getResourceAsStream("${libName}.jar")!!.use {
             val jarFile = File("$libDir/${libName}.jar")
             if(!jarFile.exists()) {
                 jarFile.parentFile.mkdirs()

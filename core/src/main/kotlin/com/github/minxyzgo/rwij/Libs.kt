@@ -13,6 +13,7 @@ import java.util.regex.Pattern
 enum class Libs {
     `game-lib`,
     `android`,
+    `android-game-lib`,
     `android-platform-lib`,
     `commons-codec` { init {
         realName = "$name-1.6"
