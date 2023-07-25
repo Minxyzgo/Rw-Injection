@@ -42,7 +42,7 @@ object Builder {
         if(!useCache) releaseLibAction()
 
         Libs.values().forEach {
-            if(!it.isLoaded) it.load(libDir)
+            it.load(libDir)
         }
     }
 
