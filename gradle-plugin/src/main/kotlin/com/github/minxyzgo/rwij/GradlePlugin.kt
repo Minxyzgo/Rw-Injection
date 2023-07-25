@@ -54,13 +54,18 @@ open class GradlePlugin : Plugin<Project> {
     companion object {
         lateinit var rootProject: Project
         lateinit var extension: InjectionMultiplatformExtension
-        @OptIn(ExperimentalStdlibApi::class)
         @JvmOverloads
         fun DependencyHandler.injectRwLib(
             version: String,
             useRuntimeLib: Boolean = false,
+            jvmUseResource: Boolean = false
         ): Unit = with(rootProject){
             api("com.github.minxyzgo.rw-injection:core:$version")
+            fun compileOnlyMultiplatform(ext: InjectionExtension) {
+                add("${ext.target}CompileOnly".let { if(it == "CompileOnly") "compileOnly" else it }, fileTree(
+                    generateFileTreeArgs(ext)
+                ))
+            }
             if(useRuntimeLib) {
                 api("org.javassist:javassist:3.29.2-GA")
                 api("com.fasterxml.jackson.core:jackson-databind:2.13.4")
@@ -70,19 +75,20 @@ open class GradlePlugin : Plugin<Project> {
                     it.srcDir(Builder.libDir)
                 }
 
-                extension.multiplatformTargets[MultiplatformTarget.Jvm]?.let { e ->
-                    val t = e.target
-                    add("${t}CompileOnly".let { if(it == "CompileOnly") "compileOnly" else it }, fileTree(
-                        generateFileTreeArgs(e)
-                    ))
-                }
+                extension.multiplatformTargets[MultiplatformTarget.Jvm]?.let(::compileOnlyMultiplatform)
             } else {
                 extension.multiplatformTargets.forEach { (_, u) ->
+                    if(jvmUseResource && u.platform == MultiplatformTarget.Jvm) return@forEach
                     val t = u.target
                     add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(generateFileTreeArgs(u)))
                 }
+
+                if(jvmUseResource) {
+                    extension.multiplatformTargets[MultiplatformTarget.Jvm]?.let(::compileOnlyMultiplatform)
+                }
             }
         }
+
 
         @OptIn(ExperimentalStdlibApi::class)
         private fun generateFileTreeArgs(ext: InjectionExtension) = buildMap<String, Any> {
