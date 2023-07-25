@@ -74,9 +74,10 @@ open class GradlePlugin : Plugin<Project> {
                     it.srcDir(Builder.libDir)
                 }
             } else {
-                extension.multiplatformTargets.forEach { (_, u) ->
+                extension.multiplatformTargets.forEach { (platform, u) ->
                     val t = u.target
-                    add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(mapOf("dir" to Builder.libDir, "include" to "${if(t.isBlank()) "" else t.removeSuffix("Main") + "-"}**.jar")))
+                    add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(mapOf("dir" to Builder.libDir,
+                        "include" to "${if(t.isBlank() || platform == MultiplatformTarget.Jvm) "" else t.removeSuffix("Main") + "-"}**.jar")))
                 }
             }
         }
