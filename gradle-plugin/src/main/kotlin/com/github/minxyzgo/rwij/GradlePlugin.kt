@@ -16,7 +16,7 @@ open class GradlePlugin : Plugin<Project> {
         Builder.libDir = target.buildDir.absolutePath + "/generate/lib"
         Builder.useCache = false
 
-        target.extensions.create("injectionMultiplatform", InjectionMultiplatformExtension::class.java)
+        extension = target.extensions.create("injectionMultiplatform", InjectionMultiplatformExtension::class.java)
 
         target.task("rebuildJar") { task ->
             task.doLast {
@@ -58,10 +58,6 @@ open class GradlePlugin : Plugin<Project> {
 
                 }
             }
-        }
-
-        target.afterEvaluate {
-            extension = it.extensions.getByType(InjectionMultiplatformExtension::class.java)
         }
     }
 
