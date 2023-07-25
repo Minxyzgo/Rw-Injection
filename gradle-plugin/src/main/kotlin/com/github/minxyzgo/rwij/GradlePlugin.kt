@@ -94,7 +94,10 @@ open class GradlePlugin : Plugin<Project> {
         private fun generateFileTreeArgs(ext: InjectionExtension) = buildMap<String, Any> {
             put("dir", Builder.libDir)
             put("include", "${if(ext.target.isBlank() || ext.platform == MultiplatformTarget.Jvm) "" else ext.target.removeSuffix("Main") + "-"}**.jar")
-            if(ext.platform != MultiplatformTarget.Android) put("exclude", "android-game-lib.jar")
+            when(ext.platform) {
+                MultiplatformTarget.Jvm -> put("exclude", "android-game-lib.jar")
+                MultiplatformTarget.Android -> put("exclude", "android-platform-lib.jar")
+            }
         }
         private fun DependencyHandler.api(dependencyNotation: Any) = add(if(extension.enable) "commonMainApi" else "api", dependencyNotation)
     }
