@@ -13,7 +13,7 @@ open class GradlePlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         rootProject = target
-        Builder.libDir = target.buildDir.absolutePath + "/generate/lib"
+        Builder.libDir = target.buildDir.absolutePath + "/generated/lib"
         Builder.useCache = false
 
         extension = target.extensions.create("injectionMultiplatform", InjectionMultiplatformExtension::class.java)

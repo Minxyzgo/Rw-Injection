@@ -3,6 +3,7 @@ package com.github.minxyzgo.rwij
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.github.minxyzgo.rwij.util.ClassTree
 import com.github.minxyzgo.rwij.util.RenameFactory
+import javassist.ClassPath
 import javassist.ClassPool
 import javassist.bytecode.Descriptor
 import java.io.File
@@ -55,23 +56,27 @@ enum class Libs {
         private set
 
     lateinit var lib: File
-    lateinit var cp: Any // ClassPath
 
     @LibRequiredApi
-    val classTree by lazy {
-        ClassTree(ClassPool(defClassPool)).apply {
-            defPool.childFirstLookup = true
-            name = this@Libs.name
-        }
-    }
+    var cp: Any? = null // ClassPath
+
+    @LibRequiredApi
+    lateinit var classTree: ClassTree
 
     @LibRequiredApi
     fun load(libPath: String) {
         isLoaded = true
         lib = File("${libPath}/$realName.jar")
         if(!lib.exists()) throw FileNotFoundException("cannot find lib: $name")
+        cp?.let { defClassPool.removeClassPath(cp as ClassPath) }
         cp = defClassPool.appendClassPath(lib.absolutePath)
-        if(this in includes) classTree.initByJarFile(lib)
+        if(this in includes) {
+            classTree = ClassTree(ClassPool(defClassPool)).apply {
+                defPool.childFirstLookup = true
+                name = this@Libs.name
+                initByJarFile(lib)
+            }
+        }
     }
 
     @LibRequiredApi
