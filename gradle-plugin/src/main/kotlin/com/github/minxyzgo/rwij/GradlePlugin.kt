@@ -54,6 +54,7 @@ open class GradlePlugin : Plugin<Project> {
     companion object {
         lateinit var rootProject: Project
         lateinit var extension: InjectionMultiplatformExtension
+        @OptIn(ExperimentalStdlibApi::class)
         @JvmOverloads
         fun DependencyHandler.injectRwLib(
             version: String,
@@ -68,15 +69,27 @@ open class GradlePlugin : Plugin<Project> {
                 main.get().resources {
                     it.srcDir(Builder.libDir)
                 }
+
+                extension.multiplatformTargets[MultiplatformTarget.Jvm]?.let { e ->
+                    val t = e.target
+                    add("${t}CompileOnly".let { if(it == "CompileOnly") "compileOnly" else it }, fileTree(
+                        generateFileTreeArgs(e)
+                    ))
+                }
             } else {
-                extension.multiplatformTargets.forEach { (platform, u) ->
+                extension.multiplatformTargets.forEach { (_, u) ->
                     val t = u.target
-                    add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(mapOf("dir" to Builder.libDir,
-                        "include" to "${if(t.isBlank() || platform == MultiplatformTarget.Jvm) "" else t.removeSuffix("Main") + "-"}**.jar")))
+                    add("${t}Api".let { if(it == "Api") "api" else it }, fileTree(generateFileTreeArgs(u)))
                 }
             }
         }
 
+        @OptIn(ExperimentalStdlibApi::class)
+        private fun generateFileTreeArgs(ext: InjectionExtension) = buildMap<String, Any> {
+            put("dir", Builder.libDir)
+            put("include", "${if(ext.target.isBlank() || ext.platform == MultiplatformTarget.Jvm) "" else ext.target.removeSuffix("Main") + "-"}**.jar")
+            if(ext.platform != MultiplatformTarget.Android) put("exclude", "android-game-lib.jar")
+        }
         private fun DependencyHandler.api(dependencyNotation: Any) = add(if(extension.enable) "commonMainApi" else "api", dependencyNotation)
     }
 
@@ -97,13 +110,13 @@ open class GradlePlugin : Plugin<Project> {
         Jvm, Android // maybe we will support ios, who knows?
     }
 
-    class InjectionExtension(target0: MultiplatformTarget = MultiplatformTarget.Jvm) {
+    class InjectionExtension(val platform: MultiplatformTarget = MultiplatformTarget.Jvm) {
         internal val proxyList = mutableListOf<Pair<Libs, Array<out Any>>>()
         internal val deobfActions = mutableListOf<Libs>()
         internal val initJadxActions = mutableListOf<Triple<File, Libs, Array<Libs>>>()
         internal var action: (() -> Unit)? = null
 
-        var target: String = if(target0 == MultiplatformTarget.Jvm) "" else "androidMain"
+        var target: String = if(platform == MultiplatformTarget.Jvm) "" else "androidMain"
 
         fun setProxy(
             lib: Libs = Libs.`game-lib`,
