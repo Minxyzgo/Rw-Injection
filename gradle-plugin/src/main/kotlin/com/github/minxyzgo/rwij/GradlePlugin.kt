@@ -30,22 +30,18 @@ open class GradlePlugin : Plugin<Project> {
                             // for android, Changing android .jar is useless
                             Libs.android.load(libDir)
                         } else if(target == MultiplatformTarget.Jvm) {
-                            loadLib()
+                            val jvmLibs = Libs.values().toMutableList().apply { remove(Libs.`android-game-lib`) }
+                            jvmLibs.forEach { releaseLib(lib = it) }
+                            jvmLibs.forEach { it.load(libDir) }
                         }
 
                         injectionExtension.initJadxActions.forEach { t -> t.second.initJadx(t.first, t.third.map { it.classTree }.toTypedArray()) }
                         injectionExtension.proxyList.forEach { ProxyFactory.setProxy(it.first.classTree, *it.second) }
                         injectionExtension.action?.invoke()
                         injectionExtension.deobfActions.forEach { deobfuscation(it.classTree) }
-                        // for android, it will only save android-game-lib
-                        if(target == MultiplatformTarget.Android) {
-                            val jarFile = File("$libDir/android-game-lib.jar")
-                            buildJar(jarFile, Libs.`android-game-lib`.classTree.allClasses)
-                            // saving android.jar is useless
-                        } else if(target == MultiplatformTarget.Jvm) {
-                            saveLib()
-                        }
                     }
+
+                    saveLib()
                 }
             }
         }
@@ -110,6 +106,7 @@ open class GradlePlugin : Plugin<Project> {
         var enable: Boolean = false
 
         fun android(configuration: InjectionExtension.() -> Unit) {
+            Libs.includes.add(Libs.`android-game-lib`)
             configuration(multiplatformTargets.getOrPut(MultiplatformTarget.Android) { InjectionExtension(MultiplatformTarget.Android) })
         }
 

@@ -143,6 +143,6 @@ enum class Libs {
         /**
          * 需要被加载为[ClassTree]的lib, 默认只需要game-lib被加载
          */
-        val includes by lazy { mutableListOf(`game-lib`) }
+        val includes by lazy { mutableSetOf(`game-lib`) }
     }
 }
