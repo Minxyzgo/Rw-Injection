@@ -69,7 +69,7 @@ enum class Libs {
         isLoaded = true
         lib = File("${libPath}/$libName.jar")
         if(!lib.exists()) throw FileNotFoundException("cannot find lib: $name")
-        cp?.let { defClassPool.removeClassPath(cp as ClassPath) }
+        removeClassPath()
         cp = defClassPool.appendClassPath(lib.absolutePath)
         if(this in includes) {
             classTree = ClassTree(ClassPool(defClassPool)).apply {
@@ -78,6 +78,12 @@ enum class Libs {
                 initByJarFile(lib)
             }
         }
+    }
+
+    @OptIn(LibRequiredApi::class)
+    fun removeClassPath() {
+        cp?.let { defClassPool.removeClassPath(cp as ClassPath) }
+        cp = null
     }
 
     @LibRequiredApi

@@ -59,7 +59,6 @@ object Builder {
     fun releaseLib(cl: ClassLoader = Thread.currentThread().contextClassLoader, lib: Libs, libName: String = lib.realName) {
         val jarFile = File("$libDir/${libName}.jar")
         releaseLibActions[lib]?.let {
-            java.nio.file.Files.deleteIfExists(jarFile.toPath())
             it(lib, jarFile, cl)
         } ?: cl.getResourceAsStream("${libName}.jar")!!.use {
             if(!jarFile.exists()) {
