@@ -1,3 +1,5 @@
+@file:Suppress("unused", "MemberVisibilityCanBePrivate")
+
 package com.github.minxyzgo.rwij
 
 import com.github.minxyzgo.rwij.Builder.useCache
@@ -32,7 +34,7 @@ fun <T : Function<*>> Any.setFunction(source: T, target: T?) {
     val method = this::class.getProxyMethodByKFunction(source as KFunction<*>)
     checkMethodIfValid(method)
     val proxyMapField = this::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true }
-    val proxyMap = ((proxyMapField.get(this) as? java.util.HashMap<*, *>) ?: java.util.HashMap<Method, Function<*>?>().also { proxyMapField.set(this, it) }) as java.util.HashMap<Method, Function<*>?>
+    val proxyMap = ((proxyMapField.get(this) as? HashMap<*, *>) ?: HashMap<Method, Function<*>?>().also { proxyMapField.set(this, it) }) as HashMap<Method, Function<*>?>
     proxyMap[method] = target
 }
 
@@ -58,7 +60,7 @@ private fun checkMethodIfValid(method: Method) {
 
 @Suppress("unused")
 object ProxyFactory {
-    val proxyVersion = "0.0.5-beta"
+    const val proxyVersion = "0.0.5-beta"
 
     /**
      * 防kt不防java (笑
@@ -72,13 +74,14 @@ object ProxyFactory {
             val proxyMap0: MFMap? = (if(self != null) {
                 val agent = self::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true }
                 agent.get(self) as? MFMap
-            } else null) ?: agentMap[thisMethod.declaringClass.name]?.apply {
+            } else null)
+            val proxyMap1 = agentMap[thisMethod.declaringClass.name]?.apply {
                 isAgent = true
             }?.proxyMap
 
             val desc = thisMethod.getDeclaredAnnotation(Proxy::class.java).desc
 
-            val kf = proxyMap0?.get(desc)
+            val kf = proxyMap0?.get(desc) ?: proxyMap1?.get(desc)
             val containKey = proxyMap0?.containsKey(desc) ?: false
             //方法设置为空体时返回类型默认值
             if(kf == null && containKey) {
@@ -250,6 +253,8 @@ object ProxyFactory {
             val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
             proceed.modifiers = Modifier.setProtected(method.modifiers)
             clazz.addMethod(proceed)
+        } else {
+            method.modifiers = method.modifiers and Modifier.NATIVE.inv()
         }
 
         val r = "\$r"
@@ -262,7 +267,7 @@ object ProxyFactory {
             m2.setAccessible(true);
         """.trimIndent()
 
-        method.modifiers = method.modifiers and Modifier.NATIVE.inv()
+
         method.setBody(
             """
                     {

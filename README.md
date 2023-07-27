@@ -11,10 +11,9 @@
 * 使用一套基于[javassist](https://github.com/jboss-javassist/javassist)的代理服务，支持静态/动态代理
 
 ## TODO
-* [x] 支持缓存
 * [x] 支持加载jadx
 * [x] gradle-插件
-* [ ] 加快构建速率
+* [x] 支持多平台 (Jvm, Android)
 
 ## 如何使用？
 
@@ -70,12 +69,6 @@ dependencies {
 
 `injection`提供下列函数和字段
 
-#### libMapping -- 用于映射自定义lib
-```kotlin
-val libMapping: MutableMap<Libs, String>
-```
-其中第一个参数需要映射的Lib，第二个参数是需要映射的自定义lib的path
-
 #### setProxy -- 代理解决方案
 `setProxy(lib: Libs, vararg proxyList: Any)`设置指定Lib内的某个class为代理，当使用这个函数时，必须确保已经使用`injectRwLib`
 
@@ -120,6 +113,19 @@ fun initJadx(
 
 这将加载jadx项目文件并为指定lib进行重命名操作
 
+#### action
+如果你试图在构建时进行其它的操作 (运用`javassist`) 那么`action`会很有用
+
+一个示例是
+```kotlin
+action {
+    Libs.`game-lib`.classTree.defPool["xxx"].apply {
+        val method = getDeclaredMethod("x")
+        //...
+    }
+}
+```
+
 下面是一个综合以上示例的例子
 ```kotlin
 buildscript {
@@ -149,10 +155,13 @@ injection {
     deobfuscation(com.github.minxyzgo.rwij.Libs.`game-lib`)
     initJadx("game-lib.jar")
     setProxy(Libs.`game-lib`, "a.a.b", "a.a.c".with("c"), "a.a.d".withNon("a", "b(IZ)"))
+    action {
+        //...
+    }
 }
 ```
 
-在你完成了配置以后，plugin提供了`rebuildJar`task，这将执行`injection`的内容，并输出jar到lib下
+在你完成了配置以后，plugin提供了`rebuildJar`task，这将执行`injection`的内容，并输出jar到`build/gerated/lib`下
 ## 动态代理模式
 如果你想在运行期方便修改各种class，只需要`injectRwLib("master-SNAPSHOT", true)`启动动态代理
 
@@ -210,3 +219,40 @@ e.setFunction(e::sample1) {
 e.sample1() // 234
 ```
 因此，代理优先级为 对象代理 > 类代理 > 原始函数
+
+## 多平台支持
+如果你考虑支持除Jvm以外的平台， 那么多平台支持会解决这个问题
+
+要使用多平台支持，**请确保已有`kotlin-multiplatform`gradle插件** 
+
+且插件应位于`common`子项目中， 并确保多平台共享子项目的`source`为`commonMain`
+
+要使用多平台，使用`injectionMultiplatform` 代替 `injection`
+
+```kotlin
+injectionMultiplatform {
+    enable = true
+    jvm {
+        target = "desktop"
+        setProxy(Libs.`game-lib`, "xxx")
+        action {
+            //...
+        }
+    }
+    android {
+        setProxy(Libs.`android-game-lib`, "xxx")
+        //...
+    }
+}
+```
+
+上面的例子中， `enable = true`是必须的，否则多平台支持无法起效
+
+其中`jvm` `android`代表两个平台， （目前仅支持`jvm`和`android`）
+
+`target` 表示`platform`的`source`目标，例如`desktop`, `desktopMain`, `jvmMain`等
+
+其余配置与`injection`一致
+
+
+
