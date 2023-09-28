@@ -60,7 +60,7 @@ private fun checkMethodIfValid(method: Method) {
 
 @Suppress("unused")
 object ProxyFactory {
-    const val proxyVersion = "0.0.5-beta"
+    const val proxyVersion = "0.0.6-beta"
 
     /**
      * 防kt不防java (笑
@@ -81,7 +81,9 @@ object ProxyFactory {
 
             val desc = thisMethod.getDeclaredAnnotation(Proxy::class.java).desc
 
-            val kf = proxyMap0?.get(desc) ?: proxyMap1?.get(desc)
+            val (mode, kf0) = proxyMap1?.get(desc) ?: (InjectMode.Override to null)
+
+            val kf = proxyMap0?.get(desc) ?: kf0
             val containKey = proxyMap0?.containsKey(desc) ?: false
             //方法设置为空体时返回类型默认值
             if(kf == null && containKey) {
@@ -89,10 +91,34 @@ object ProxyFactory {
             }
 
             return if(kf != null) {
-                if(isAgent) {
-                    kf.call(self, *args)
+                if(isAgent && !java.lang.reflect.Modifier.isStatic(thisMethod.modifiers)) {
+                    when(mode) {
+                        InjectMode.InsertBefore -> {
+                            val r0 = kf.call(self, *args)
+                            val r1 = proceed?.invoke(self, *args)
+                            if(r0 == Unit) r1 else r0
+                        }
+                        InjectMode.Override -> kf.call(self, *args)
+                        InjectMode.InsertAfter -> {
+                            val r1 = proceed?.invoke(self, *args)
+                            val r0 = kf.call(self, *args)
+                            if(r0 == Unit) r1 else r0
+                        }
+                    }
                 } else {
-                    kf.call(*args)
+                    when(mode) {
+                        InjectMode.InsertBefore -> {
+                            val r0 = kf.call(*args)
+                            val r1 = proceed?.invoke(self, *args)
+                            if(r0 == Unit) r1 else r0
+                        }
+                        InjectMode.Override -> kf.call(*args)
+                        InjectMode.InsertAfter -> {
+                            val r1 = proceed?.invoke(self, *args)
+                            val r0 = kf.call(*args)
+                            if(r0 == Unit) r1 else r0
+                        }
+                    }
                 }
             } else {
                 proceed?.invoke(self, *args)
@@ -329,41 +355,57 @@ object ProxyFactory {
  * Class代理解决方案，提供有用的函数便于实现代理
  */
 class FunctionAgent<T : Any>(private val tClass: KClass<T>) {
-    internal val proxyMap = mutableMapOf<String, Function<*>?>()
+    internal val proxyMap = mutableMapOf<String, Pair<InjectMode, Function<*>?>>()
 
     /**
      * @param source must be [KFunction].
      */
-    fun <T : Function<*>> addProxy(source: T, target: T?) {
+    fun <T : Function<*>> addProxy(source: T, mode: InjectMode = InjectMode.Override, target: T?) {
         tClass.getProxyMethodByKFunction(source as KFunction<*>)
         proxyMap[tClass.getProxyMethodByKFunction(source as KFunction<*>).also {
             checkMethodIfValid(it)
-        }.getDesc()] = target
+        }.getDesc()] = mode to target
     }
 
     /**
      * @param name 要代理的方法名
      * @param parameterTypes 要代理方法的参数类型
      */
-    fun addProxy(name: String, vararg parameterTypes: KClass<*>, target: Function<*>?) {
+    fun addProxy(name: String, vararg parameterTypes: KClass<*>, mode: InjectMode = InjectMode.Override, target: Function<*>?) {
         val classes = parameterTypes.map(KClass<*>::java).toTypedArray()
         val method = tClass.java.getDeclaredMethod(name, *classes).also {
             checkMethodIfValid(it)
         }
-        proxyMap[method.getDesc()] = target
+        proxyMap[method.getDesc()] = mode to target
     }
 
     /**
      * @param name 要代理的方法名
      * @param desc 要代理的方法的签名，一个合法的示例是： (IIZLjava/lang/String;)
      */
-    fun addProxy(name: String, desc: String, target: Function<*>?) {
+    fun addProxy(name: String, desc: String, mode: InjectMode = InjectMode.Override, target: Function<*>?) {
         val classes = getParameterTypes(desc)
         val method = tClass.java.getDeclaredMethod(name, *classes).also {
             checkMethodIfValid(it)
         }
-        proxyMap[method.getDesc()] = target
+        proxyMap[method.getDesc()] = mode to target
     }
+}
+
+enum class InjectMode {
+    /**
+     * 函数将运行在代理方法之前。若函数返回Unit, 则使用代理方法的返回值
+     */
+    InsertBefore,
+
+    /**
+     * 函数完全覆盖代理方法。代理方法不再执行
+     */
+    Override,
+    /**
+     * 函数将运行在代理方法之后。若函数返回Unit, 则使用代理方法的返回值
+     */
+    InsertAfter
 }
 
 interface MethodHandler {
