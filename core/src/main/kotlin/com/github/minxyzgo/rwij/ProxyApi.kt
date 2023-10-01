@@ -60,7 +60,7 @@ private fun checkMethodIfValid(method: Method) {
 
 @Suppress("unused")
 object ProxyFactory {
-    const val proxyVersion = "0.0.6-beta"
+    const val proxyVersion = "0.0.7-beta"
 
     /**
      * 防kt不防java (笑
@@ -190,19 +190,25 @@ object ProxyFactory {
                     val allName = any.second
                     val methodArray = buildList {
                         if(isNon) {
-                            addAll(clazz.declaredMethods.filter { !allName.contains(it.name) && !allName.contains(it.longName) })
+                            addAll(clazz.declaredMethods.filter { !allName.contains(it.name) && !allName.contains(it.longName) }.map { it to -1 })
                         } else {
                             allName.forEach { item ->
+                                val list = item.split(":at")
+                                val realName = list[0]
+                                val line = list.getOrNull(1)?.toInt() ?: -1
                                 if(item.contains("(")) {
-                                    add(clazz.declaredMethods.firstOrNull { it.name + Descriptor.getParamDescriptor(it.signature) == item } ?: throw IllegalArgumentException("Couldn't find method: $item in class: ${clazz.name}. Did you enter the correct name?"))
+                                    add((clazz.declaredMethods.firstOrNull {
+                                        it.name + Descriptor.getParamDescriptor(it.signature) == realName
+                                    } ?: throw IllegalArgumentException("Couldn't find method: $realName in class: ${clazz.name}. Did you enter the correct name?"))
+                                            to line)
                                 }
 
-                                else addAll(clazz.declaredMethods.filter { it.name == item })
+                                else addAll(clazz.declaredMethods.filter { it.name == realName }.map { it to line })
                             }
                         }
                     }
 
-                    if(isEmpty) setEmpty(methodArray.toTypedArray()) else methodArray.forEach(::setProxyMethod)
+                    if(isEmpty) setEmpty(methodArray.map { it.first }.toTypedArray()) else methodArray.forEach { setProxyMethod(it.first, it.second) }
                 }
 
                 else -> throw IllegalArgumentException()
@@ -244,6 +250,8 @@ object ProxyFactory {
     //context(ProxyFactory)
     fun String.withNon(vararg list: String) = "$this:non" to list
 
+    fun String.at(line: Int) = "$this:at$line"
+
     @LibRequiredApi
     private fun setEmpty(methods: Array<CtMethod>) {
         methods.forEach {
@@ -257,12 +265,12 @@ object ProxyFactory {
         clazz.methods.filter {
             it.methodInfo2.codeAttribute != null && !it.name.startsWith("__proxy__") && !it.hasAnnotation(Proxy::class.java)
         }.forEach {
-            setProxyMethod(it)
+            setProxyMethod(it, -1)
         }
     }
 
     @LibRequiredApi
-    private fun setProxyMethod(method: CtMethod) {
+    private fun setProxyMethod(method: CtMethod, line: Int) {
         val clazz = method.declaringClass
         val constPool = clazz.classFile2.constPool
 
@@ -276,30 +284,40 @@ object ProxyFactory {
             )
         }
 
-        val isNative = Modifier.isNative(method.modifiers)
-
-        val proceedName = "__proxy__${method.name}"
-        if(!isNative) {
-            val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
-            proceed.modifiers = Modifier.setProtected(method.modifiers)
-            clazz.addMethod(proceed)
+        if(line != -1) {
+            val args = "\$args"
+            val clazz0 = "\$class"
+            val sig = "\$sig"
+            method.insertAt(line, """
+                java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
+                m1.setAccessible(true);
+                com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, null, $args);
+            """.trimIndent())
         } else {
-            method.modifiers = method.modifiers and Modifier.NATIVE.inv()
-        }
+            val isNative = Modifier.isNative(method.modifiers)
 
-        val r = "\$r"
-        val sig = "\$sig"
-        val args = "\$args"
-        val clazz0 = "\$class"
+            val proceedName = "__proxy__${method.name}"
+            if(!isNative) {
+                val proceed = CtNewMethod.copy(method, proceedName, clazz, null)
+                proceed.modifiers = Modifier.setProtected(method.modifiers)
+                clazz.addMethod(proceed)
+            } else {
+                method.modifiers = method.modifiers and Modifier.NATIVE.inv()
+            }
 
-        val proceedCode = """
+            val r = "\$r"
+            val sig = "\$sig"
+            val args = "\$args"
+            val clazz0 = "\$class"
+
+            val proceedCode = """
             java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${method.name}", $sig);
             m2.setAccessible(true);
         """.trimIndent()
 
 
-        method.setBody(
-            """
+            method.setBody(
+                """
                     {
                         java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
                         m1.setAccessible(true);
@@ -308,7 +326,8 @@ object ProxyFactory {
                             ${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, ${if(isNative) null else "m2"}, $args);
                     }
                 """.trimIndent()
-        )
+            )
+        }
 
         val annotationsAttribute = AnnotationsAttribute(constPool, AnnotationsAttribute.visibleTag)
         val proxyAnnotation = javassist.bytecode.annotation.Annotation(Proxy::class.java.canonicalName, constPool)
