@@ -290,7 +290,7 @@ object ProxyFactory {
             val voidTypeCode = """
                         kotlin.Pair pair = com.github.minxyzgo.rwij.ProxyFactory.getProxyFunction("${Descriptor.toJavaName(clazz.name)}", "${method.getDesc()}");
                         com.github.minxyzgo.rwij.InjectMode mode = pair.getFirst();
-                        kotlin.Function fun = pair.getSecond();
+                        Object fun = pair.getSecond();
                         if(mode == com.github.minxyzgo.rwij.InjectMode.InsertBefore) {
                             Object result1 = $proxyCode
                             if(result1 instanceof com.github.minxyzgo.rwij.InterruptResult) {
