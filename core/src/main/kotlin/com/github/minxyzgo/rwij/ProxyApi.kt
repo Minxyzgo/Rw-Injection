@@ -60,75 +60,7 @@ private fun checkMethodIfValid(method: Method) {
 
 @Suppress("unused")
 object ProxyFactory {
-    const val proxyVersion = "0.0.7-beta"
-
-    /**
-     * 防kt不防java (笑
-     */
-    @LibRequiredApi
-    @JvmField
-    @Suppress("UNCHECKED_CAST")
-    val handler = object : MethodHandler {
-        override fun invoke(self: Any?, thisMethod: Method, proceed: Method?, args: Array<Any>): Any? {
-            var isAgent = false
-            val proxyMap0: MFMap? = (if(self != null) {
-                val agent = runCatching { self::class.java.getDeclaredField("__proxy_map__").apply { isAccessible = true } }
-                agent.getOrNull()?.get(self) as? MFMap
-            } else null)
-            val proxyMap1 = agentMap[thisMethod.declaringClass.name]?.apply {
-                isAgent = true
-            }?.proxyMap
-
-            val desc = thisMethod.getDeclaredAnnotation(Proxy::class.java).desc
-
-            val (mode, kf0) = proxyMap1?.get(desc) ?: (InjectMode.Override to null)
-
-            val kf = proxyMap0?.get(desc) ?: kf0
-            val containKey = proxyMap0?.containsKey(desc) ?: false
-            //方法设置为空体时返回类型默认值
-            if(kf == null && containKey) {
-                return thisMethod.returnType.normalTypeInitStatement()
-            }
-
-            return if(kf != null) {
-                if(isAgent && !java.lang.reflect.Modifier.isStatic(thisMethod.modifiers)) {
-                    when(mode) {
-                        InjectMode.InsertBefore -> {
-                            val r0 = kf.call(self, *args)
-                            if(r0 is InterruptResult) {
-                                r0.result
-                            } else {
-                                val r1 = proceed?.invoke(self, *args)
-                                if(r0 == Unit) r1 else r0
-                            }
-                        }
-                        InjectMode.Override -> kf.call(self, *args)
-                        InjectMode.InsertAfter -> {
-                            val r1 = proceed?.invoke(self, *args)
-                            val r0 = kf.call(self, *args)
-                            if(r0 == Unit) r1 else r0
-                        }
-                    }
-                } else {
-                    when(mode) {
-                        InjectMode.InsertBefore -> {
-                            val r0 = kf.call(*args)
-                            val r1 = proceed?.invoke(self, *args)
-                            if(r0 == Unit) r1 else r0
-                        }
-                        InjectMode.Override -> kf.call(*args)
-                        InjectMode.InsertAfter -> {
-                            val r1 = proceed?.invoke(self, *args)
-                            val r0 = kf.call(*args)
-                            if(r0 == Unit) r1 else r0
-                        }
-                    }
-                }
-            } else {
-                proceed?.invoke(self, *args)
-            }
-        }
-    }
+    const val proxyVersion = "0.1.0-alpha"
 
     private var isLoaded = false
     internal val agentMap = mutableMapOf<String, FunctionAgent<*>>()
@@ -252,6 +184,12 @@ object ProxyFactory {
 
     fun String.at(line: Int) = "$this:at$line"
 
+    @JvmStatic
+    fun getProxyFunction(className: String, thisMethodDesc: String): Pair<InjectMode, Function<*>?> {
+        val proxyMap1 = agentMap[className]?.proxyMap
+        return proxyMap1?.get(thisMethodDesc) ?: (InjectMode.Override to null)
+    }
+
     @LibRequiredApi
     private fun setEmpty(methods: Array<CtMethod>) {
         methods.forEach {
@@ -272,6 +210,7 @@ object ProxyFactory {
     @LibRequiredApi
     private fun setProxyMethod(method: CtMethod, line: Int) {
         val clazz = method.declaringClass
+        val pool = method.declaringClass.classPool
         val constPool = clazz.classFile2.constPool
 
         if(!clazz.fields.any { it.name == "__proxy_map__" }) {
@@ -285,16 +224,18 @@ object ProxyFactory {
         }
 
         if(line != -1) {
-            val args = "\$args"
-            val clazz0 = "\$class"
-            val sig = "\$sig"
-            method.insertAt(line, """
-                java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
-                m1.setAccessible(true);
-                com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, null, $args);
-            """.trimIndent())
+//            val args = "\$args"
+//            val clazz0 = "\$class"
+//            val sig = "\$sig"
+//            method.insertAt(line, """
+//                java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
+//                m1.setAccessible(true);
+//                com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, null, $args);
+//            """.trimIndent())
+            throw RuntimeException("Stop.")
         } else {
             val isNative = Modifier.isNative(method.modifiers)
+
 
             val proceedName = "__proxy__${method.name}"
             if(!isNative) {
@@ -308,22 +249,66 @@ object ProxyFactory {
             val r = "\$r"
             val sig = "\$sig"
             val args = "\$args"
+            val arg2 = "$$"
             val clazz0 = "\$class"
 
-            val proceedCode = """
-            java.lang.reflect.Method m2 = $clazz0.getDeclaredMethod("__proxy__${method.name}", $sig);
-            m2.setAccessible(true);
-        """.trimIndent()
-
-
+            val proxyCode = """
+                com.github.minxyzgo.rwij.ProxyFactory.call(fun, $args);
+            """.trimIndent()
+            val proceedCode = if(!Modifier.isNative(method.modifiers)) """
+                ${if(Modifier.isStatic(method.modifiers)) Descriptor.toJavaName(clazz.name) else "this"}.$proceedName($arg2);
+            """.trimIndent() else "null"
+            val returnTypeCode = """
+                        Object result;
+                        kotlin.Pair pair = com.github.minxyzgo.rwij.ProxyFactory.getProxyFunction("${Descriptor.toJavaName(clazz.name)}", "${method.getDesc()}");
+                        com.github.minxyzgo.rwij.InjectMode mode = pair.getFirst();
+                        kotlin.Function fun = pair.getSecond();
+                        if(mode == com.github.minxyzgo.rwij.InjectMode.InsertBefore) {
+                            Object result1 = $proxyCode
+                            if(result1 instanceof com.github.minxyzgo.rwij.InterruptResult) {
+                                result = ((com.github.minxyzgo.rwij.InterruptResult)result1).getResult();
+                            } else {
+                                Object result2 = $proceedCode
+                                if(result1 != kotlin.Unit.INSTANCE) {
+                                    result = result1;
+                                } else {
+                                    result = result2;
+                                }
+                            }
+                        } else if(mode == com.github.minxyzgo.rwij.InjectMode.Override) {
+                            result = $proxyCode
+                        } else if(mode == com.github.minxyzgo.rwij.InjectMode.InsertAfter) {
+                            Object result1 = $proceedCode
+                            Object result2 = $proxyCode
+                            if(result2 != kotlin.Unit.INSTANCE) {
+                                result = result2;
+                            } else {
+                                result = result1;
+                            }
+                        }
+            """.trimIndent()
+            val voidTypeCode = """
+                        kotlin.Pair pair = com.github.minxyzgo.rwij.ProxyFactory.getProxyFunction("${Descriptor.toJavaName(clazz.name)}", "${method.getDesc()}");
+                        com.github.minxyzgo.rwij.InjectMode mode = pair.getFirst();
+                        kotlin.Function fun = pair.getSecond();
+                        if(mode == com.github.minxyzgo.rwij.InjectMode.InsertBefore) {
+                            Object result1 = $proxyCode
+                            if(result1 instanceof com.github.minxyzgo.rwij.InterruptResult) {
+                            } else {
+                                $proceedCode
+                            }
+                        } else if(mode == com.github.minxyzgo.rwij.InjectMode.Override) {
+                            $proxyCode
+                        } else if(mode == com.github.minxyzgo.rwij.InjectMode.InsertAfter) {
+                            $proceedCode
+                            $proxyCode
+                        }
+            """.trimIndent()
             method.setBody(
                 """
                     {
-                        java.lang.reflect.Method m1 = $clazz0.getDeclaredMethod("${method.name}", $sig);
-                        m1.setAccessible(true);
-                        ${if(!isNative) proceedCode else ""}
-                        ${if(method.returnType != CtClass.voidType) "return" else ""} ($r) com.github.minxyzgo.rwij.ProxyFactory.handler.invoke(
-                            ${if(!Modifier.isStatic(method.modifiers)) "this" else "null"}, m1, ${if(isNative) null else "m2"}, $args);
+                        ${if(method.returnType == CtClass.voidType) voidTypeCode else returnTypeCode}
+                        ${if(method.returnType != CtClass.voidType) "return ($r) result" else ""};
                     }
                 """.trimIndent()
             )
@@ -356,7 +341,7 @@ object ProxyFactory {
             isAccessible = true
         }
 
-        val allLibFiles = Libs.values().map(Libs::lib)
+        val allLibFiles = Libs.values().filter { it.shouldLoad }.map(Libs::lib)
 
         allLibFiles.forEach {
             addURL.invoke(Thread.currentThread().contextClassLoader, it.toURI().toURL())
@@ -372,6 +357,89 @@ object ProxyFactory {
 
     private fun CtMethod.getDesc() =
         "$name(${this.parameterTypes.joinToString(",") { it.name }})"
+
+    @JvmStatic
+    @Suppress("UNCHECKED_CAST")
+    fun call(kf: Function<*>, vararg args: Any?): Any? {
+        return with(kf) {
+            when(this) {
+                is Function0 -> {
+                    invoke()
+                }
+                is Function1<*,*> -> {
+                    (this as Function1<Any?,Any?>).invoke(args[0])
+                }
+                is Function2<*,*,*> -> {
+                    (this as Function2<Any?,Any?,Any?>).invoke(args[0],args[1])
+                }
+                is Function3<*,*,*,*> -> {
+                    (this as Function3<Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2])
+                }
+                is Function4<*,*,*,*,*> -> {
+                    (this as Function4<Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3])
+                }
+                is Function5<*,*,*,*,*,*> -> {
+                    (this as Function5<Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4])
+                }
+                is Function6<*,*,*,*,*,*,*> -> {
+                    (this as Function6<Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5])
+                }
+                is Function7<*,*,*,*,*,*,*,*> -> {
+                    (this as Function7<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6])
+                }
+                is Function8<*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function8<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7])
+                }
+                is Function9<*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function9<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8])
+                }
+                is Function10<*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function10<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9])
+                }
+                is Function11<*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function11<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10])
+                }
+                is Function12<*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function12<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11])
+                }
+                is Function13<*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function13<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12])
+                }
+                is Function14<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function14<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13])
+                }
+                is Function15<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function15<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14])
+                }
+                is Function16<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function16<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15])
+                }
+                is Function17<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function17<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16])
+                }
+                is Function18<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function18<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17])
+                }
+                is Function19<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function19<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18])
+                }
+                is Function20<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function20<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19])
+                }
+                is Function21<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function21<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19],args[20])
+                }
+                is Function22<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
+                    (this as Function22<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19],args[20],args[21])
+                }
+                is FunctionN<*> -> {
+                    (this as FunctionN<Any?>).invoke(*args)
+                }
+
+                else -> { throw RuntimeException() }
+            }
+        }
+    }
 }
 
 /**
@@ -432,113 +500,7 @@ enum class InjectMode {
     InsertAfter
 }
 
-interface MethodHandler {
-    /**
-     * Is called when a method is invoked on a proxy instance associated
-     * with this handler.  This method must process that method invocation.
-     *
-     * @param self          the proxy instance.
-     * @param thisMethod    the overridden method declared in the super
-     * class or interface.
-     * @param proceed       the forwarder method for invoking the overridden
-     * method.  It is null if the overridden method is
-     * abstract or declared in the interface.
-     * @param args          an array of objects containing the values of
-     * the arguments passed in the method invocation
-     * on the proxy instance.  If a parameter type is
-     * a primitive type, the type of the array element
-     * is a wrapper class.
-     * @return              the resulting value of the method invocation.
-     *
-     * @throws Throwable    if the method invocation fails.
-     */
-    @Throws(Throwable::class)
-    operator fun invoke(
-        self: Any?, thisMethod: Method, proceed: Method?,
-        args: Array<Any>
-    ): Any?
-}
 
-
-@Suppress("UNCHECKED_CAST")
-fun Function<*>.call(vararg args: Any?): Any? {
-    return when(this) {
-        is Function0 -> {
-            invoke()
-        }
-        is Function1<*,*> -> {
-            (this as Function1<Any?,Any?>).invoke(args[0])
-        }
-        is Function2<*,*,*> -> {
-            (this as Function2<Any?,Any?,Any?>).invoke(args[0],args[1])
-        }
-        is Function3<*,*,*,*> -> {
-            (this as Function3<Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2])
-        }
-        is Function4<*,*,*,*,*> -> {
-            (this as Function4<Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3])
-        }
-        is Function5<*,*,*,*,*,*> -> {
-            (this as Function5<Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4])
-        }
-        is Function6<*,*,*,*,*,*,*> -> {
-            (this as Function6<Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5])
-        }
-        is Function7<*,*,*,*,*,*,*,*> -> {
-            (this as Function7<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6])
-        }
-        is Function8<*,*,*,*,*,*,*,*,*> -> {
-            (this as Function8<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7])
-        }
-        is Function9<*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function9<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8])
-        }
-        is Function10<*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function10<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9])
-        }
-        is Function11<*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function11<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10])
-        }
-        is Function12<*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function12<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11])
-        }
-        is Function13<*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function13<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12])
-        }
-        is Function14<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function14<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13])
-        }
-        is Function15<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function15<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14])
-        }
-        is Function16<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function16<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15])
-        }
-        is Function17<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function17<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16])
-        }
-        is Function18<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function18<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17])
-        }
-        is Function19<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function19<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18])
-        }
-        is Function20<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function20<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19])
-        }
-        is Function21<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function21<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19],args[20])
-        }
-        is Function22<*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*,*> -> {
-            (this as Function22<Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?,Any?>).invoke(args[0],args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],args[9],args[10],args[11],args[12],args[13],args[14],args[15],args[16],args[17],args[18],args[19],args[20],args[21])
-        }
-        is FunctionN<*> -> {
-            (this as FunctionN<Any?>).invoke(*args)
-        }
-
-        else -> { throw RuntimeException() }
-    }
-}
 
 private typealias MFMap = Map<String, Function<*>?>
 

@@ -53,6 +53,7 @@ enum class Libs {
     `tinylinepp`;
 
     var realName = name
+    var shouldLoad: Boolean = true
     var isLoaded = false
         private set
 

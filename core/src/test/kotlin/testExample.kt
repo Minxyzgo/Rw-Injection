@@ -9,14 +9,15 @@ class ProxyTest {
     @Test
     fun testProxyFunction() {
         Builder.libDir = "testLib"
+        Libs.`android-game-lib`.shouldLoad = false
         val f = File(Builder.libDir)
         if(!f.exists()) {
             f.mkdirs()
-            Builder.releaseLibs(ProxyTest::class.java.classLoader)
         }
+        Builder.releaseLibs(ProxyTest::class.java.classLoader)
         //
         ProxyFactory.runInit {
-            setProxy(Libs.`game-lib`.classTree, "a.a.b".with("close"))
+            setProxy(Libs.`game-lib`.classTree, "a.a.b".with("accept"))
         }
 
         val i = 0

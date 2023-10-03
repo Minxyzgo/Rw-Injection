@@ -41,7 +41,7 @@ object Builder {
 
         if(!useCache) releaseLibs()
 
-        Libs.values().forEach {
+        Libs.values().filter { it.shouldLoad }.forEach {
             it.load(libDir)
         }
     }
