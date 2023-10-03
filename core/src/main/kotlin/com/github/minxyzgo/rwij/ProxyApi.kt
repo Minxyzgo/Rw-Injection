@@ -247,13 +247,11 @@ object ProxyFactory {
             }
 
             val r = "\$r"
-            val sig = "\$sig"
             val args = "\$args"
             val arg2 = "$$"
-            val clazz0 = "\$class"
 
             val proxyCode = """
-                com.github.minxyzgo.rwij.ProxyFactory.call(fun, $args);
+                com.github.minxyzgo.rwij.ProxyFactory.call(fun, ${if(Modifier.isStatic(method.modifiers)) "null" else "$0"}, $args );
             """.trimIndent()
             val proceedCode = if(!Modifier.isNative(method.modifiers)) """
                 ${if(Modifier.isStatic(method.modifiers)) "" else "this."}$proceedName($arg2);
@@ -361,7 +359,8 @@ object ProxyFactory {
 
     @JvmStatic
     @Suppress("UNCHECKED_CAST")
-    fun call(kf: Any?, vararg args: Any?): Any? {
+    fun call(kf: Any?, self: Any?, vararg args2: Any?): Any? {
+        val args = if(self != null) arrayOf(self, *args2) else args2
         return with(kf as Function<*>) {
             when(this) {
                 is Function0 -> {

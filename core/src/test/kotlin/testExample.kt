@@ -20,27 +20,27 @@ class ProxyTest {
             setProxy(Libs.`game-lib`.classTree, "com.Element".with("getAttributeBoolean"))
         }
 
-        val i = 0
-        val bc = a.a.b()
-
-        a.a.b::class.setFunction {
-            this.addProxy(a.a.b::close) {
-                println(i)
-            }
-        }
-
-        println("test")
-
-        bc.close()
-        bc.close()
-       // bc.close()
-        //bc.close()
-        //bc.soTimeout
-
-        println("test2")
-        ProxyFactory.agentMap.forEach { (t, u) ->
-            u.proxyMap.keys.forEach { println(it) }
-        }
+//        val i = 0
+//        val bc = a.a.b()
+//
+//        a.a.b::class.setFunction {
+//            this.addProxy(a.a.b::close) {
+//                println(i)
+//            }
+//        }
+//
+//        println("test")
+//
+//        bc.close()
+//        bc.close()
+//       // bc.close()
+//        //bc.close()
+//        //bc.soTimeout
+//
+//        println("test2")
+//        ProxyFactory.agentMap.forEach { (t, u) ->
+//            u.proxyMap.keys.forEach { println(it) }
+//        }
     }
 
     @Test
