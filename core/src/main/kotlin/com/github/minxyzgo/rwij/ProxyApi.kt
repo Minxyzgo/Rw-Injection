@@ -258,34 +258,36 @@ object ProxyFactory {
             val proceedCode = if(!Modifier.isNative(method.modifiers)) """
                 ${if(Modifier.isStatic(method.modifiers)) "" else "this."}$proceedName($arg2);
             """.trimIndent() else "null"
+            val returnCode = """
+                ${if(method.returnType != CtClass.voidType) "return ($r)" else ""}
+            """.trimIndent()
             val returnTypeCode = """
-                        Object result;
                         kotlin.Pair pair = com.github.minxyzgo.rwij.ProxyFactory.getProxyFunction("${Descriptor.toJavaName(clazz.name)}", "${method.getDesc()}");
                         com.github.minxyzgo.rwij.InjectMode mode = pair.getFirst();
                         Object fun = pair.getSecond();
                         if(mode == com.github.minxyzgo.rwij.InjectMode.InsertBefore) {
                             Object result1 = $proxyCode
                             if(result1 instanceof com.github.minxyzgo.rwij.InterruptResult) {
-                                result = ((com.github.minxyzgo.rwij.InterruptResult)result1).getResult();
+                                $returnCode ((com.github.minxyzgo.rwij.InterruptResult)result1).getResult();
                             } else {
-                                Object result2 = $proceedCode
                                 if(result1 != kotlin.Unit.INSTANCE) {
-                                    result = result1;
+                                    $returnCode result1;
                                 } else {
-                                    result = result2;
+                                    $returnCode $proceedCode
                                 }
                             }
                         } else if(mode == com.github.minxyzgo.rwij.InjectMode.Override) {
-                            result = $proxyCode
+                            $returnCode $proxyCode
                         } else if(mode == com.github.minxyzgo.rwij.InjectMode.InsertAfter) {
-                            Object result1 = $proceedCode
                             Object result2 = $proxyCode
                             if(result2 != kotlin.Unit.INSTANCE) {
-                                result = result2;
+                                $returnCode result2;
                             } else {
-                                result = result1;
+                                $returnCode $proceedCode
                             }
                         }
+                        
+                        throw new RuntimeException();
             """.trimIndent()
             val voidTypeCode = """
                         kotlin.Pair pair = com.github.minxyzgo.rwij.ProxyFactory.getProxyFunction("${Descriptor.toJavaName(clazz.name)}", "${method.getDesc()}");
@@ -308,7 +310,6 @@ object ProxyFactory {
                 """
                     {
                         ${if(method.returnType == CtClass.voidType) voidTypeCode else returnTypeCode}
-                        ${if(method.returnType != CtClass.voidType) "return ($r) result" else ""};
                     }
                 """.trimIndent()
             )
