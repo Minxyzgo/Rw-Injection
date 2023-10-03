@@ -256,7 +256,7 @@ object ProxyFactory {
                 com.github.minxyzgo.rwij.ProxyFactory.call(fun, $args);
             """.trimIndent()
             val proceedCode = if(!Modifier.isNative(method.modifiers)) """
-                ${if(Modifier.isStatic(method.modifiers)) Descriptor.toJavaName(clazz.name) else "this"}.$proceedName($arg2);
+                ${if(Modifier.isStatic(method.modifiers)) "" else "this."}$proceedName($arg2);
             """.trimIndent() else "null"
             val returnTypeCode = """
                         Object result;

@@ -17,7 +17,7 @@ class ProxyTest {
         Builder.releaseLibs(ProxyTest::class.java.classLoader)
         //
         ProxyFactory.runInit {
-            setProxy(Libs.`game-lib`.classTree, "a.a.b".with("accept"))
+            setProxy(Libs.`game-lib`.classTree, "android.util.Log".with("a"))
         }
 
         val i = 0
